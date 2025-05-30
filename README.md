@@ -1,16 +1,13 @@
-# Aiman Al-Hazmi
-
-**Data Science Student | Software Developer | Volunteer IT Admin**
+# Data Science Student | Software Developer | Volunteer IT Admin
 
 📍 Berlin, Germany  
-📧 aimanalhazmi@gmail.com  
-🔗 [@aimanalhazmi](mailto:aimanalhazmi@gmail.com)
+📧 [@aimanalhazmi@gmail.com](mailto:aimanalhazmi@gmail.com)
 
 ---
 
 ## 🧠 About Me
 
-I'm a passionate Computer Science student with a focus on **Data Science & Engineering**. With hands-on experience in software development, backend integration, IT administration, and voluntary work, I bring a mix of technical depth and social commitment. I'm especially interested in **AI, Machine Learning, Deep Learning**, and **Computer Vision**.
+I’m a Computer Science student focusing on **Data Science and Engineering**, with experience in software development, building machine learning models, and IT administration. I’m particularly passionate about **AI**, **Machine Learning**, **Deep Learning**, and **Computer Vision**, and I enjoy applying data-driven solutions to real-world problems. Outside of academics and tech, I’m also actively involved in community volunteering.
 
 ---
 
@@ -18,38 +15,43 @@ I'm a passionate Computer Science student with a focus on **Data Science & Engin
 
 **Software Developer (Part-Time)**  
 *Computacenter AG & Co. oHG*  
-*Sep 2022 – Present*  
+*Sep 2022 – Current*  
 - Backend development  
-- Data integration from various sources
+- Integrating and processing data from multiple sources for various uses
 
 **Volunteer IT Administrator**  
 *Association of Yemeni Students in Germany (VJSD)*  
-*Jun 2023 – Present*  
+*Jun 2023 – May 2025*  
 - Automated internal workflows  
 - Developed and maintained the association’s website
 
 **IT Administrator**  
 *Franz & Wach Personalservice GmbH*  
 *Jun 2022 – Sep 2022*  
-- Managed IP telephony system  
-- Provided 1st-level support for laptops and mobile devices
+- User setup and configuration of extensions in the IP telephony system (Telekom CloudPBX)
+- Delivered first-level support for employees, resolving laptop and mobile device issues, including setup and escalation
+
 
 ---
 
 ## 🎓 Education
 
 **Technical University of Berlin**  
-*MSc Computer Science (Data Science & Engineering)*  
+*MSc Computer Science*  
 *Oct 2024 – Expected Sep 2026*
+- Main Track: *Data Science & Engineering*
 
 **Free University of Berlin**  
 *BSc Computer Science*  
 *Oct 2020 – Sep 2024*  
-- Thesis: *Brand Detection on Garments*  
-- Project: *Python & Flutter tool for climbing gear management*
+- Bachelor thesis: *Brand Detection on Garments*
+- Focus fields: *Machine Learning and AI*
+- Project: Material Management System – developed a Python- and Flutter-based tool to manage mountain climbing equipment
 
-**Kaiserslautern University of Applied Sciences (Studienkolleg)**  
+**Kaiserslautern University of Applied Sciences** 
+*Studienkolleg*
 *Oct 2019 – Sep 2020*
+- Preparation of international students with non-recognized high school equivalency for studies in Germany
 
 **Ar-Rasheed Modern Schools, Yemen**  
 *A Levels (Abitur)*  
