@@ -1,5 +1,5 @@
 title: Aiman Al-Hazmi
 logo: /assets/img/aiman.jpg
 #description: text below image
-show_downloads: true
+show_downloads: false
 theme: jekyll-theme-minimal
