@@ -5,7 +5,7 @@
 
 ---
 
-## 🧠 About Me
+## About Me
 
 I’m a Computer Science student focusing on **Data Science and Engineering**, with experience in software development, building machine learning models, and IT administration. I’m particularly passionate about **AI**, **Machine Learning**, **Deep Learning**, and **Computer Vision**, and I enjoy applying data-driven solutions to real-world problems. Outside of academics and tech, I’m also actively involved in community volunteering.
 
@@ -63,18 +63,14 @@ I’m a Computer Science student focusing on **Data Science and Engineering**, w
 
 ### 📦 [Fairfluence](https://github.com/aimanalhazmi/fairfluence)  
 Built an open-source Python library for advanced dataset profiling, influence-based quality assessment, and fairness analysis.  
-Integrates with OpenML, Kaggle, and Hugging Face. Uses model training and influence functions to pinpoint high-impact records, enabling precise data debugging and fairness evaluation.  
-Features include automatic profiling (missing values, outliers, imbalance), model-based analysis, and interactive visual reports — all accessible via a user-friendly UI.
+Integrates with OpenML, Kaggle, and Hugging Face. Uses model training and influence functions to pinpoint high-impact records, enabling precise data debugging and fairness evaluation. Features include automatic profiling (missing values, outliers, imbalance), model-based analysis, and interactive visual reports — all accessible via a user-friendly UI.
 
 ### ❤️ [ECG Time Series Classification](https://github.com/aimanalhazmi/ECG-Time-Series-Classification)
 Built a machine learning pipeline to classify ECG time series into four rhythm categories (Normal, AF, Other, Noisy).  
-Conducted data exploration, model training, and hyperparameter tuning. Baseline model achieved **71% weighted F1-score** on the validation set.  
-Currently improving performance through time and frequency-based data augmentation and dataset reduction strategies.
+Conducted data exploration, model training, and hyperparameter tuning. Baseline model achieved **71% weighted F1-score** on the validation set. Currently improving performance through time and frequency-based data augmentation and dataset reduction strategies.
 
 ### 📰 [Financial News Sentiment Analysis](https://github.com/aimanalhazmi/financial-news-sentiment-nlp)
-Built a sentiment classifier for financial news headlines using Naive Bayes, Feedforward Neural Networks, and BERT-based RNNs on a domain-labeled dataset (~5K headlines).  
-Tackled class imbalance and improved performance through lemmatization and optimized vectorization.  
-Achieved **F1-score of 0.773 (multiclass)** and **0.892 (binary)** with neural networks. Also explored semantic similarity with PMI and GloVe.
+Built a sentiment classifier for financial news headlines using Naive Bayes, Feedforward Neural Networks and BERT-based RNNs on a domain-labeled dataset (~5K headlines). Tackled class imbalance and improved performance through lemmatization and optimized vectorization. Achieved **F1-score of 0.773 (multiclass)** and **0.892 (binary)** with neural networks. Also explored semantic similarity with PMI and GloVe.
 
 ---
 
