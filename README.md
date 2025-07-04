@@ -13,7 +13,7 @@ I’m a Computer Science student focusing on **Data Science and Engineering**, w
 
 ## 💼 Work Experience
 
-**Software Developer & Data Analyst(Part-Time)**  
+**Software Developer & Data Analyst (Working Student)**  
 *Computacenter AG & Co. oHG*  
 *Sep 2022 – Current*  
 - Backend development
