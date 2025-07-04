@@ -62,8 +62,7 @@ I’m a Computer Science student focusing on **Data Science and Engineering**, w
 ## 🧠 Machine Learning & Data Science Projects
 
 ### 📦 [Fairfluence](https://github.com/aimanalhazmi/fairfluence)  
-Built an open-source Python library for advanced dataset profiling, influence-based quality assessment, and fairness analysis.  
-Integrates with OpenML, Kaggle, and Hugging Face. Uses model training and influence functions to pinpoint high-impact records, enabling precise data debugging and fairness evaluation. Features include automatic profiling (missing values, outliers, imbalance), model-based analysis, and interactive visual reports — all accessible via a user-friendly UI.
+Built an open-source Python library for advanced dataset profiling, influence-based quality assessment and fairness analysis. Integrates with OpenML, Kaggle, and Hugging Face. Uses model training and influence functions to find important records, making it easier to debug data and check for fairness. Features include automatic profiling (missing values, outliers, imbalance), model-based analysis and interactive visual reports - all accessible via a user-friendly UI.
 
 ### ❤️ [ECG Time Series Classification](https://github.com/aimanalhazmi/ECG-Time-Series-Classification)
 Built a machine learning pipeline to classify ECG time series into four rhythm categories (Normal, AF, Other, Noisy).  
