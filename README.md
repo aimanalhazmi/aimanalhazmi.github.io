@@ -1,4 +1,4 @@
-# Data Science Student | Software Developer | Volunteer IT Admin
+# Data Science Student | Software Developer
 
 📍 Berlin, Germany  
 📧 [@aimanalhazmi@gmail.com](mailto:aimanalhazmi@gmail.com)
@@ -13,10 +13,11 @@ I’m a Computer Science student focusing on **Data Science and Engineering**, w
 
 ## 💼 Work Experience
 
-**Software Developer (Part-Time)**  
+**Software Developer & Data Analyst(Part-Time)**  
 *Computacenter AG & Co. oHG*  
 *Sep 2022 – Current*  
-- Backend development  
+- Backend development
+- Data analysis 
 - Integrating and processing data from multiple sources for various uses
 
 **Volunteer IT Administrator**  
