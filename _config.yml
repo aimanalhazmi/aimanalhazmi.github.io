@@ -10,12 +10,14 @@ github_username: aimanalhazmi
 # linkedin_username: your_linkedin
 
 # Theme Settings
-remote_theme: cotes2020/jekyll-theme-chirpy
+theme: jekyll-theme-chirpy
 lang: en
 timezone: Europe/Berlin
 
 # Navigation Settings
 tabs:
+  - title: About
+    url: /tabs/about/
   - title: CV
     url: /tabs/cv/
   - title: Projects
