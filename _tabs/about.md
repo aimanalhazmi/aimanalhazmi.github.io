@@ -6,8 +6,6 @@ order: 1
 permalink: /about/
 ---
 
-# Data Science Student | Software Developer
-
 📍 Berlin, Germany  
 📧 [@aimanalhazmi@gmail.com](mailto:aimanalhazmi@gmail.com)
 

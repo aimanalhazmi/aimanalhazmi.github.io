@@ -29,8 +29,7 @@ I’m a Computer Science student focusing on **Data Science and Engineering**, w
 **IT Administrator**  
 *Franz & Wach Personalservice GmbH*  
 *Jun 2022 – Sep 2022*  
-- User setup and configuration of extensions in the IP telephony system (Telekom CloudPBX)
-- Delivered first-level support for employees, resolving laptop and mobile device issues, including setup and escalation
+- Managed IP telephony (CloudPBX) and first-level technical support.
 
 
 ---
@@ -63,7 +62,7 @@ I’m a Computer Science student focusing on **Data Science and Engineering**, w
 ## 🧠 Machine Learning & Data Science Projects
 
 ### 📦 [Fairfluence](https://github.com/aimanalhazmi/fairfluence)  
-Built an open-source Python library for advanced dataset profiling, influence-based quality assessment, and fairness analysis. Integrates with OpenML, Kaggle, and Hugging Face. Uses influence functions to identify important records, helping users debug data and uncover fairness issues. Features include automatic profiling (missing values, outliers, imbalance) and interactive visual reports—all accessible via a user-friendly UI.
+Built an open-source Python tool for advanced dataset profiling, influence-based quality assessment, and fairness analysis. Integrates with OpenML, Kaggle, and Hugging Face. Uses influence functions to identify important records, helping users debug data and uncover fairness issues. Features include automatic profiling (missing values, outliers, imbalance) and interactive visual reports—all accessible via a user-friendly UI.
 
 ### ❤️ [ECG Time Series Classification](https://github.com/aimanalhazmi/ECG-Time-Series-Classification)
 Built a deep learning pipeline to classify ECG signals into Normal, AF, Other, and Noisy classes.
@@ -78,10 +77,12 @@ Built a sentiment classifier for financial news headlines using Naive Bayes, Fee
 
 ## 🛠 Skills
 
-**Programming:** Python, Java, SQL, R, JavaScript, PHP, CSS, Haskell  
-**Frameworks/Tools:** Spring Boot, Flask, PyTorch, Docker, GitHub/GitLab, Jira, Linux  
-**Languages:** Arabic (native), German (fluent), English (advanced)  
-**Office:** Microsoft Office, LaTeX
+- **Programming:** Python, Java, SQL, R, JavaScript, PHP, C, Haskell.
+- **Generative AI & LLMs:** LangChain, RAG (Retrieval-Augmented Generation), Fine-tuning (LoRA/QLoRA), MCP (Model Context Protocol), Ollama, LM Studio, Llama.cpp.
+- **AI/Machine Learning:** PyTorch, TensorFlow, HuggingFace, Neural Networks, Model Training & Evaluation.
+- **Data Science & Engineering:** Data Science Lifecycle, Data Integration, Data Preprocessing, Statistical Analysis.
+- **Backend & DevOps:** FastAPI, Flask, Spring Boot, Docker, GitHub/GitLab, Jira, Linux.
+- **Languages:** Arabic (Native), German (Fluent), English (Advanced).
 
 ---
 
