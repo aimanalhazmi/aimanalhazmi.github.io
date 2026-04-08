@@ -1,5 +1,25 @@
 title: Aiman Al-Hazmi
-logo: /assets/img/aiman.jpg
-#description: text below image
-show_downloads: false
-theme: jekyll-theme-minimal
+tagline: MSc Computer Science Student | Software Developer
+description: >-
+  Master’s student in Computer Science at TU Berlin focused on Data Science and Software Engineering. 
+  Currently working as a software developer with a strong interest in AI, Deep Learning, 
+  Computer Vision and Natural Language Processing.
+url: 'https://aimanalhazmi.github.io' 
+github_username: aimanalhazmi
+# twitter_username: your_twitter
+# linkedin_username: your_linkedin
+
+# Theme Settings
+remote_theme: cotes2020/jekyll-theme-chirpy
+lang: en
+timezone: Europe/Berlin
+
+# Navigation Settings
+tabs:
+  - title: CV
+    url: /tabs/cv/
+  - title: Projects
+    url: /tabs/projects/
+
+# Avatar/Logo
+avatar: /assets/img/aiman.jpg
