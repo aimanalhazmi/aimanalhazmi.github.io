@@ -18,3 +18,11 @@ Outperformed classical models and improved minority class detection (AF, Noisy) 
 
 ### 📰 [Financial News Sentiment Analysis](https://github.com/aimanalhazmi/financial-news-sentiment-nlp)
 Built a sentiment classifier for financial news headlines using Naive Bayes, Feedforward Neural Networks and BERT-based RNNs on a domain-labeled dataset (~5K headlines). Tackled class imbalance and improved performance through lemmatization and optimized vectorization. Achieved **F1-score of 0.773 (multiclass)** and **0.892 (binary)** with neural networks. Also explored semantic similarity with PMI and GloVe.
+
+
+### [Material Management System](https://github.com/aimanalhazmi/material-manager)
+A **Bachelor's team project** at FU Berlin developed for a mountain climbing association to track and manage specialized equipment.
+- **Role:** Backend Developer
+- **Backend:** Engineered with **Python** to manage inventory logic, equipment status, and database interactions.
+- **Frontend:** Integrated backend services with a responsive **Web Application** built using **Flutter**.
+- **Collaboration:** Worked in an agile team setting, managing the full development lifecycle from requirements gathering to the final deployment of the system.
