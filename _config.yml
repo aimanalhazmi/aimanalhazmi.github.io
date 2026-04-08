@@ -1,27 +1,42 @@
 title: Aiman Al-Hazmi
 tagline: MSc Computer Science Student | Software Developer
+paginate: 10
+paginate_path: '/page:num'
 description: >-
   Master’s student in Computer Science at TU Berlin focused on Data Science and Software Engineering. 
   Currently working as a software developer with a strong interest in AI, Deep Learning, 
   Computer Vision and Natural Language Processing.
 url: 'https://aimanalhazmi.github.io' 
+baseurl: ""
 github_username: aimanalhazmi
-# twitter_username: your_twitter
 # linkedin_username: your_linkedin
+
 
 # Theme Settings
 theme: jekyll-theme-chirpy
 lang: en
 timezone: Europe/Berlin
+future: true
+
+# Routing
+permalink: /posts/:title/
 
 # Navigation Settings
 tabs:
   - title: About
-    url: /tabs/about/
+    url: /about/
   - title: CV
-    url: /tabs/cv/
+    url: /cv/
   - title: Projects
-    url: /tabs/projects/
+    url: /projects/
 
 # Avatar/Logo
 avatar: /assets/img/aiman.jpg
+
+# Required Plugins for Chirpy
+plugins:
+  - jekyll-paginate
+  - jekyll-sitemap
+  - jekyll-seo-tag
+  - jekyll-archives
+  - jekyll-include-cache

@@ -2,7 +2,8 @@
 layout: page
 title: Projects
 icon: fas fa-code
-order: 2
+order: 3
+permalink: /projects/
 ---
 
 ### 📦 [Fairfluence](https://github.com/aimanalhazmi/fairfluence)
