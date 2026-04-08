@@ -22,6 +22,7 @@ future: true
 permalink: /posts/:title/
 
 # Navigation Settings
+include: [_tabs]
 tabs:
   - title: About
     url: /about/
@@ -35,8 +36,11 @@ avatar: /assets/img/aiman.jpg
 
 # Required Plugins for Chirpy
 plugins:
+  - jekyll-theme-chirpy
   - jekyll-paginate
   - jekyll-sitemap
   - jekyll-seo-tag
   - jekyll-archives
   - jekyll-include-cache
+
+envelope: production

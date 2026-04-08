@@ -3,6 +3,7 @@ title: "Can We Trust AI Agents? The 'Human-on-Top' Necessity"
 date: 2026-04-07 18:00:00 +0200
 categories: [AI, Experiments]
 tags: [ai-agents, local-llms, backend, claude]
+layout: post
 ---
 
 Can we truly trust AI agents to work independently? 😃 I recently ran an experiment using **Claude 4.5 Opus** as the architect and local models (**Devstral 2**, **Qwen 3 Coder**) for implementation. 
