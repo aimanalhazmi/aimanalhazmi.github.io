@@ -7,8 +7,17 @@ description: >-
   Currently working as a software developer with a strong interest in AI, Deep Learning, 
   Computer Vision and Natural Language Processing.
 
-github_username: aimanalhazmi
-# linkedin_username: your_linkedin
+github:
+  username: aimanalhazmi
+
+email: 'aimanalhazmi@gmail.com'
+
+social:
+  name: Aiman Al-Hazmi
+  links:
+    - https://github.com/aimanalhazmi
+    - https://www.linkedin.com/in/aimanalhazmi
+    - mailto:aimanalhazmi@gmail.com
 
 url: 'https://aimanalhazmi.github.io' 
 baseurl: ""
