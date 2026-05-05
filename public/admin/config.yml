@@ -5,7 +5,7 @@ backend:
   # base_url is the OAuth proxy you'll deploy on Cloudflare Workers (free).
   # Replace this once the worker is deployed:
   base_url: https://me.aimanyalhazmi.workers.dev
-  auth_endpoint: auth
+  auth_endpoint: api/auth
 
 publish_mode: simple
 media_folder: "public/img/uploads"
