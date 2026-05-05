@@ -1,0 +1,27 @@
+---
+const sections = [
+  { href: '/cv/', label: 'Overview' },
+  { href: '/cv/experience/', label: 'Experience' },
+  { href: '/cv/education/', label: 'Education' },
+  { href: '/cv/skills/', label: 'Skills' },
+  { href: '/cv/societies/', label: 'Societies & Interests' },
+];
+const { pathname } = Astro.url;
+const isActive = (href: string) =>
+  href === '/cv/' ? pathname === '/cv/' || pathname === '/cv' : pathname.startsWith(href);
+---
+
+<nav class="flex flex-wrap gap-2 mb-12 -mt-2">
+  {sections.map((s) => (
+    <a
+      href={s.href}
+      class={`px-3.5 py-1.5 rounded-full text-xs tracking-wide transition-colors border ${
+        isActive(s.href)
+          ? 'bg-white text-[#0b0b12] border-transparent'
+          : 'bg-white/5 text-[var(--color-muted)] border-[var(--color-border)] hover:text-white hover:border-[var(--color-accent)]'
+      }`}
+    >
+      {s.label}
+    </a>
+  ))}
+</nav>

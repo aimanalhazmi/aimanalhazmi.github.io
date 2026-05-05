@@ -1,0 +1,80 @@
+backend:
+  name: github
+  repo: aimanalhazmi/aimanalhazmi.github.io
+  branch: main
+  # base_url is the OAuth proxy you'll deploy on Cloudflare Workers (free).
+  # Replace this once the worker is deployed:
+  base_url: https://decap-oauth.YOUR-SUBDOMAIN.workers.dev
+  auth_endpoint: auth
+
+publish_mode: simple
+media_folder: "public/img/uploads"
+public_folder: "/img/uploads"
+site_url: https://aimanalhazmi.github.io
+display_url: https://aimanalhazmi.github.io
+logo_url: /img/aiman.jpg
+
+collections:
+  - name: blog
+    label: Blog Posts
+    folder: src/content/blog
+    create: true
+    slug: "{{year}}-{{month}}-{{day}}-{{slug}}"
+    extension: md
+    format: frontmatter
+    summary: "{{title}} — {{date | date('YYYY-MM-DD')}}"
+    sortable_fields: [date, title]
+    fields:
+      - { label: Title, name: title, widget: string }
+      - { label: Date, name: date, widget: datetime, format: "YYYY-MM-DD", time_format: false }
+      - { label: Description, name: description, widget: text, required: false }
+      - label: Tags
+        name: tags
+        widget: list
+        required: false
+        default: []
+      - label: Categories
+        name: categories
+        widget: list
+        required: false
+        default: []
+      - { label: Cover Image, name: cover, widget: image, required: false }
+      - { label: Draft, name: draft, widget: boolean, default: false, required: false }
+      - { label: Body, name: body, widget: markdown }
+
+  - name: projects
+    label: Projects
+    folder: src/content/projects
+    create: true
+    slug: "{{slug}}"
+    extension: md
+    format: frontmatter
+    summary: "{{title}}"
+    sortable_fields: [order, title]
+    fields:
+      - { label: Title, name: title, widget: string }
+      - { label: Description, name: description, widget: text }
+      - { label: Repo URL, name: repo, widget: string, required: false }
+      - { label: Demo URL, name: demo, widget: string, required: false }
+      - { label: Cover Image, name: cover, widget: image, required: false }
+      - label: Tags
+        name: tags
+        widget: list
+        required: false
+        default: []
+      - { label: Featured, name: featured, widget: boolean, default: false, required: false }
+      - { label: Order, name: order, widget: number, default: 0, required: false, value_type: int }
+      - { label: Body, name: body, widget: markdown }
+
+  - name: pages
+    label: Pages (CV / About data)
+    files:
+      - label: Site profile
+        name: site
+        file: src/data/profile.json
+        fields:
+          - { label: Name, name: name, widget: string }
+          - { label: Tagline, name: tagline, widget: string }
+          - { label: Location, name: location, widget: string }
+          - { label: Email, name: email, widget: string }
+          - { label: Description, name: description, widget: text }
