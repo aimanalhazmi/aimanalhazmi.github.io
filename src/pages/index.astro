@@ -2,6 +2,7 @@
 import Base from '~/layouts/Base.astro';
 import HeroScene from '~/components/HeroScene';
 import HeroParallax from '~/components/HeroParallax';
+import Greeting from '~/components/Greeting';
 import Reveal from '~/components/Reveal';
 import ScrollSection from '~/components/ScrollSection';
 import { getCollection } from 'astro:content';
@@ -29,7 +30,7 @@ const posts = (await getCollection('blog'))
       <div>
         <Reveal client:load>
           <p class="text-sm uppercase tracking-[0.3em] text-[var(--color-muted)] mb-4">
-            {site.location}
+            <Greeting client:load />
           </p>
         </Reveal>
         <Reveal client:load delay={0.1}>

@@ -1,10 +1,10 @@
 import { Canvas, useFrame } from '@react-three/fiber';
 import { Stars } from '@react-three/drei';
-import { Suspense, useMemo, useRef } from 'react';
+import { Suspense, useEffect, useMemo, useRef, useState } from 'react';
 import * as THREE from 'three';
+import { currentPhase, paletteFor, type Palette } from '~/lib/timeOfDay';
 
-/** Spiral galaxy of particles — three arms, color-graded core → edge. */
-function Galaxy({ count = 8000 }: { count?: number }) {
+function Galaxy({ count = 8000, palette }: { count?: number; palette: Palette }) {
   const ref = useRef<THREE.Points>(null);
 
   const { positions, colors } = useMemo(() => {
@@ -17,8 +17,8 @@ function Galaxy({ count = 8000 }: { count?: number }) {
     const randomness = 0.4;
     const randomnessPower = 3;
 
-    const inside = new THREE.Color('#7c5cff');
-    const outside = new THREE.Color('#22d3ee');
+    const inside = new THREE.Color(palette.inside);
+    const outside = new THREE.Color(palette.outside);
 
     for (let i = 0; i < count; i++) {
       const i3 = i * 3;
@@ -53,7 +53,7 @@ function Galaxy({ count = 8000 }: { count?: number }) {
       colors[i3 + 2] = mixed.b;
     }
     return { positions, colors };
-  }, [count]);
+  }, [count, palette.inside, palette.outside]);
 
   useFrame((_, delta) => {
     if (ref.current) ref.current.rotation.y += delta * 0.04;
@@ -78,8 +78,7 @@ function Galaxy({ count = 8000 }: { count?: number }) {
   );
 }
 
-/** Glowing dots flowing along a lemniscate (∞) — the infinity loop. */
-function InfinityLoop({ count = 220 }: { count?: number }) {
+function InfinityLoop({ count = 220, color }: { count?: number; color: string }) {
   const ref = useRef<THREE.Points>(null);
   const material = useRef<THREE.PointsMaterial>(null);
 
@@ -92,7 +91,7 @@ function InfinityLoop({ count = 220 }: { count?: number }) {
   useFrame((state) => {
     if (!ref.current) return;
     const t = state.clock.getElapsedTime();
-    const a = 2.6; // size of the lemniscate
+    const a = 2.6;
     for (let i = 0; i < count; i++) {
       const phi = phases[i] * Math.PI * 2 + t * 0.35;
       const denom = 1 + Math.sin(phi) * Math.sin(phi);
@@ -120,7 +119,7 @@ function InfinityLoop({ count = 220 }: { count?: number }) {
       <pointsMaterial
         ref={material}
         size={0.085}
-        color="#ffffff"
+        color={color}
         sizeAttenuation
         depthWrite={false}
         blending={THREE.AdditiveBlending}
@@ -130,8 +129,7 @@ function InfinityLoop({ count = 220 }: { count?: number }) {
   );
 }
 
-/** Slowly drifting nebula clouds — soft additive sprites for depth. */
-function Nebula() {
+function Nebula({ palette }: { palette: Palette }) {
   const a = useRef<THREE.Mesh>(null);
   const b = useRef<THREE.Mesh>(null);
   useFrame((state) => {
@@ -150,7 +148,7 @@ function Nebula() {
       <mesh ref={a} position={[-2, 0.5, -3]}>
         <planeGeometry args={[6, 6]} />
         <meshBasicMaterial
-          color="#7c5cff"
+          color={palette.nebulaA}
           transparent
           opacity={0.12}
           blending={THREE.AdditiveBlending}
@@ -160,7 +158,7 @@ function Nebula() {
       <mesh ref={b} position={[2, -0.5, -4]}>
         <planeGeometry args={[7, 7]} />
         <meshBasicMaterial
-          color="#22d3ee"
+          color={palette.nebulaB}
           transparent
           opacity={0.1}
           blending={THREE.AdditiveBlending}
@@ -182,6 +180,16 @@ function CameraDrift() {
 }
 
 export default function HeroScene() {
+  // Pick palette based on visitor's local time-of-day. Recheck every 5 min.
+  const [palette, setPalette] = useState<Palette>(() => paletteFor(currentPhase()));
+
+  useEffect(() => {
+    const tick = () => setPalette(paletteFor(currentPhase()));
+    tick();
+    const id = window.setInterval(tick, 5 * 60 * 1000);
+    return () => window.clearInterval(id);
+  }, []);
+
   return (
     <Canvas
       camera={{ position: [0, 0.6, 7], fov: 55 }}
@@ -189,11 +197,11 @@ export default function HeroScene() {
       gl={{ antialias: true, alpha: true }}
     >
       <Suspense fallback={null}>
-        <color attach="background" args={['#04040a']} />
-        <fog attach="fog" args={['#04040a', 8, 18]} />
-        <Nebula />
-        <Galaxy />
-        <InfinityLoop />
+        <color attach="background" args={[palette.bg]} />
+        <fog attach="fog" args={[palette.bg, 8, 18]} />
+        <Nebula palette={palette} />
+        <Galaxy palette={palette} />
+        <InfinityLoop color={palette.trail} />
         <Stars radius={80} depth={50} count={4000} factor={4} fade speed={0.6} />
         <CameraDrift />
       </Suspense>
