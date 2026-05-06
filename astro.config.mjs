@@ -11,11 +11,7 @@ export default defineConfig({
   // 1. Change this to 'static'
   output: 'static',
 
-  adapter: cloudflare({
-    platformProxy: {
-      enabled: true,
-    },
-  }),
+  adapter: cloudflare(),
 
   integrations: [react(), mdx(), sitemap()],
   vite: {
