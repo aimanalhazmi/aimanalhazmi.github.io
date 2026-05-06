@@ -1,7 +1,7 @@
 backend:
   name: github
   repo: aimanalhazmi/aimanalhazmi.github.io
-  branch: redesign-astro-3d
+  branch: main
   # base_url is the OAuth proxy you'll deploy on Cloudflare Workers (free).
   # Replace this once the worker is deployed:
   base_url: https://me.aimanyalhazmi.workers.dev
