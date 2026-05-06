@@ -1,28 +1,37 @@
 import { Canvas, useFrame } from '@react-three/fiber';
 import { Stars } from '@react-three/drei';
-import { Suspense, useEffect, useMemo, useRef, useState } from 'react';
+import { Suspense, useMemo, useRef } from 'react';
 import * as THREE from 'three';
-import { currentPhase, paletteFor, type Palette } from '~/lib/timeOfDay';
 
-function Galaxy({ count = 8000, palette }: { count?: number; palette: Palette }) {
-  const ref = useRef<THREE.Points>(null);
+// Andromeda-inspired palette (locked, independent of time-of-day).
+const CORE_GOLD = '#f5d58a';
+const ARM_BLUE = '#6aa6ff';
+const ARM_VIOLET = '#9b7bff';
+const DUST = '#3a1e10';
+const BG = '#02020a';
+
+function Galaxy({ count = 18000 }: { count?: number }) {
+  const ref = useRef<THREE.Group>(null);
 
   const { positions, colors } = useMemo(() => {
     const positions = new Float32Array(count * 3);
     const colors = new Float32Array(count * 3);
 
-    const arms = 3;
-    const radius = 6;
-    const spin = 1.2;
-    const randomness = 0.4;
+    const arms = 2;
+    const radius = 7.5;
+    const spin = 1.6;
+    const randomness = 0.45;
     const randomnessPower = 3;
 
-    const inside = new THREE.Color(palette.inside);
-    const outside = new THREE.Color(palette.outside);
+    const inside = new THREE.Color(CORE_GOLD);
+    const mid = new THREE.Color('#e8b878');
+    const outside = new THREE.Color(ARM_BLUE);
+    const tip = new THREE.Color(ARM_VIOLET);
+    const dust = new THREE.Color(DUST);
 
     for (let i = 0; i < count; i++) {
       const i3 = i * 3;
-      const r = Math.pow(Math.random(), 1.5) * radius;
+      const r = Math.pow(Math.random(), 1.7) * radius;
       const armAngle = ((i % arms) / arms) * Math.PI * 2;
       const spinAngle = r * spin;
 
@@ -36,7 +45,7 @@ function Galaxy({ count = 8000, palette }: { count?: number; palette: Palette })
         (Math.random() < 0.5 ? 1 : -1) *
         randomness *
         r *
-        0.4;
+        0.12; // very flat disk
       const rz =
         Math.pow(Math.random(), randomnessPower) *
         (Math.random() < 0.5 ? 1 : -1) *
@@ -47,162 +56,242 @@ function Galaxy({ count = 8000, palette }: { count?: number; palette: Palette })
       positions[i3 + 1] = ry;
       positions[i3 + 2] = Math.sin(armAngle + spinAngle) * r + rz;
 
-      const mixed = inside.clone().lerp(outside, r / radius);
-      colors[i3] = mixed.r;
-      colors[i3 + 1] = mixed.g;
-      colors[i3 + 2] = mixed.b;
+      const t = r / radius;
+      // gold core -> warm mid -> cool blue -> faint violet at the tips
+      let c: THREE.Color;
+      if (t < 0.25) c = inside.clone().lerp(mid, t / 0.25);
+      else if (t < 0.7) c = mid.clone().lerp(outside, (t - 0.25) / 0.45);
+      else c = outside.clone().lerp(tip, (t - 0.7) / 0.3);
+
+      // sprinkle a few dust-lane darker particles in the mid-disk
+      if (t > 0.2 && t < 0.65 && Math.random() < 0.08) {
+        c = c.clone().lerp(dust, 0.7);
+      }
+
+      colors[i3] = c.r;
+      colors[i3 + 1] = c.g;
+      colors[i3 + 2] = c.b;
     }
     return { positions, colors };
-  }, [count, palette.inside, palette.outside]);
+  }, [count]);
 
+  // Slow majestic rotation (~one revolution per ~4 minutes — perceived as drift).
   useFrame((_, delta) => {
-    if (ref.current) ref.current.rotation.y += delta * 0.04;
+    if (ref.current) ref.current.rotation.y += delta * 0.025;
   });
 
+  // Tilt closer to edge-on for the Andromeda profile.
   return (
-    <points ref={ref} rotation={[Math.PI * 0.18, 0, 0]}>
-      <bufferGeometry>
-        <bufferAttribute attach="attributes-position" args={[positions, 3]} />
-        <bufferAttribute attach="attributes-color" args={[colors, 3]} />
-      </bufferGeometry>
-      <pointsMaterial
-        size={0.025}
-        sizeAttenuation
-        depthWrite={false}
-        blending={THREE.AdditiveBlending}
-        vertexColors
-        transparent
-        opacity={0.95}
-      />
-    </points>
+    <group ref={ref} rotation={[1.05, 0, 0.05]}>
+      <points>
+        <bufferGeometry>
+          <bufferAttribute attach="attributes-position" args={[positions, 3]} />
+          <bufferAttribute attach="attributes-color" args={[colors, 3]} />
+        </bufferGeometry>
+        <pointsMaterial
+          size={0.03}
+          sizeAttenuation
+          depthWrite={false}
+          blending={THREE.AdditiveBlending}
+          vertexColors
+          transparent
+          opacity={1}
+        />
+      </points>
+    </group>
   );
 }
 
-function InfinityLoop({ count = 220, color }: { count?: number; color: string }) {
-  const ref = useRef<THREE.Points>(null);
-  const material = useRef<THREE.PointsMaterial>(null);
-
-  const positions = useMemo(() => new Float32Array(count * 3), [count]);
-  const phases = useMemo(
-    () => Float32Array.from({ length: count }, (_, i) => i / count),
-    [count]
-  );
+// Pulsing additive core glow — a soft sprite at the galactic center.
+function CoreGlow() {
+  const ref = useRef<THREE.Mesh>(null);
+  const tex = useMemo(() => {
+    const size = 256;
+    const c = document.createElement('canvas');
+    c.width = c.height = size;
+    const ctx = c.getContext('2d')!;
+    const g = ctx.createRadialGradient(size / 2, size / 2, 0, size / 2, size / 2, size / 2);
+    g.addColorStop(0, 'rgba(255,235,180,1)');
+    g.addColorStop(0.25, 'rgba(245,210,140,0.7)');
+    g.addColorStop(0.6, 'rgba(220,160,90,0.15)');
+    g.addColorStop(1, 'rgba(0,0,0,0)');
+    ctx.fillStyle = g;
+    ctx.fillRect(0, 0, size, size);
+    const t = new THREE.CanvasTexture(c);
+    t.colorSpace = THREE.SRGBColorSpace;
+    return t;
+  }, []);
 
   useFrame((state) => {
     if (!ref.current) return;
     const t = state.clock.getElapsedTime();
-    const a = 2.6;
+    // ~6s gentle breath cycle, 95%–105% scale.
+    const s = 1 + Math.sin((t * Math.PI * 2) / 6) * 0.05;
+    ref.current.scale.set(s, s, s);
+  });
+
+  return (
+    <mesh ref={ref} position={[0, 0, 0]}>
+      <planeGeometry args={[3.2, 3.2]} />
+      <meshBasicMaterial
+        map={tex}
+        transparent
+        depthWrite={false}
+        blending={THREE.AdditiveBlending}
+      />
+    </mesh>
+  );
+}
+
+// M32-like satellite: small soft elliptical glow below the main disk.
+function Companion() {
+  const tex = useMemo(() => {
+    const size = 128;
+    const c = document.createElement('canvas');
+    c.width = c.height = size;
+    const ctx = c.getContext('2d')!;
+    const g = ctx.createRadialGradient(size / 2, size / 2, 0, size / 2, size / 2, size / 2);
+    g.addColorStop(0, 'rgba(255,225,170,0.9)');
+    g.addColorStop(0.5, 'rgba(220,170,110,0.25)');
+    g.addColorStop(1, 'rgba(0,0,0,0)');
+    ctx.fillStyle = g;
+    ctx.fillRect(0, 0, size, size);
+    const t = new THREE.CanvasTexture(c);
+    t.colorSpace = THREE.SRGBColorSpace;
+    return t;
+  }, []);
+
+  return (
+    <mesh position={[1.3, -2.4, 0.3]} scale={[0.9, 0.7, 1]}>
+      <planeGeometry args={[1.4, 1.4]} />
+      <meshBasicMaterial
+        map={tex}
+        transparent
+        depthWrite={false}
+        blending={THREE.AdditiveBlending}
+      />
+    </mesh>
+  );
+}
+
+// Figure-8 stream: many particles flowing along a 3D lemniscate path.
+// Color gradient along the loop: gold near the crossing, blue out on the lobes.
+function InfinityStream({ count = 1400 }: { count?: number }) {
+  const ref = useRef<THREE.Points>(null);
+
+  const { positions, colors, baseColors, phases } = useMemo(() => {
+    const positions = new Float32Array(count * 3);
+    const colors = new Float32Array(count * 3);
+    const baseColors = new Float32Array(count * 3);
+    const phases = new Float32Array(count);
+    const gold = new THREE.Color(CORE_GOLD);
+    const blue = new THREE.Color(ARM_BLUE);
+    const violet = new THREE.Color(ARM_VIOLET);
+
     for (let i = 0; i < count; i++) {
-      const phi = phases[i] * Math.PI * 2 + t * 0.35;
+      phases[i] = i / count;
+      const t = phases[i];
+      const nearCross = Math.abs(Math.sin(t * Math.PI * 2));
+      const c = gold.clone().lerp(blue, nearCross);
+      c.lerp(violet, nearCross * 0.25);
+      baseColors[i * 3] = c.r;
+      baseColors[i * 3 + 1] = c.g;
+      baseColors[i * 3 + 2] = c.b;
+      colors[i * 3] = c.r;
+      colors[i * 3 + 1] = c.g;
+      colors[i * 3 + 2] = c.b;
+    }
+    return { positions, colors, baseColors, phases };
+  }, [count]);
+
+  useFrame((state) => {
+    if (!ref.current) return;
+    const time = state.clock.getElapsedTime();
+    const a = 3.6;
+    // Three bright pulses traveling around the loop.
+    const PULSES = 3;
+    const flow = (time / 8) % 1; // 8s per circuit
+    for (let i = 0; i < count; i++) {
+      const phi = phases[i] * Math.PI * 2;
       const denom = 1 + Math.sin(phi) * Math.sin(phi);
       const x = (a * Math.cos(phi)) / denom;
       const z = (a * Math.sin(phi) * Math.cos(phi)) / denom;
       positions[i * 3] = x;
-      positions[i * 3 + 1] = Math.sin(phi * 2 + t * 0.5) * 0.12;
+      positions[i * 3 + 1] = Math.sin(phi) * 0.35;
       positions[i * 3 + 2] = z;
+
+      // Brightness pulse: distance from any of the PULSES traveling positions.
+      const p = phases[i];
+      let minD = 1;
+      for (let k = 0; k < PULSES; k++) {
+        const head = (flow + k / PULSES) % 1;
+        const d = Math.min(Math.abs(p - head), 1 - Math.abs(p - head));
+        if (d < minD) minD = d;
+      }
+      // Sharp comet-like falloff with a long fading tail.
+      const pulse = Math.exp(-minD * 60) * 2.5 + Math.exp(-minD * 14) * 0.6;
+      const dim = 0.25; // baseline dimness so non-pulse particles fade back
+      const k = Math.min(1, dim + pulse);
+      colors[i * 3] = baseColors[i * 3] * k;
+      colors[i * 3 + 1] = baseColors[i * 3 + 1] * k;
+      colors[i * 3 + 2] = baseColors[i * 3 + 2] * k;
     }
-    const attr = ref.current.geometry.getAttribute('position') as THREE.BufferAttribute;
-    attr.array = positions;
-    attr.needsUpdate = true;
-    if (material.current) {
-      material.current.opacity = 0.75 + Math.sin(t * 1.5) * 0.15;
-    }
-    ref.current.rotation.y = t * 0.06;
-    ref.current.rotation.x = Math.sin(t * 0.2) * 0.15 + 0.2;
+    const posAttr = ref.current.geometry.getAttribute('position') as THREE.BufferAttribute;
+    posAttr.needsUpdate = true;
+    const colAttr = ref.current.geometry.getAttribute('color') as THREE.BufferAttribute;
+    colAttr.needsUpdate = true;
+
+    // Slow tumble of the whole symbol so it reads as 3D.
+    ref.current.rotation.y = 0.2 + Math.sin(time * 0.15) * 0.5;
+    ref.current.rotation.x = 0.45 + Math.sin(time * 0.1) * 0.15;
+    ref.current.rotation.z = 0.15;
   });
 
   return (
     <points ref={ref}>
       <bufferGeometry>
         <bufferAttribute attach="attributes-position" args={[positions, 3]} />
+        <bufferAttribute attach="attributes-color" args={[colors, 3]} />
       </bufferGeometry>
       <pointsMaterial
-        ref={material}
-        size={0.085}
-        color={color}
+        size={0.045}
         sizeAttenuation
         depthWrite={false}
         blending={THREE.AdditiveBlending}
+        vertexColors
         transparent
+        opacity={0.75}
       />
     </points>
-  );
-}
-
-function Nebula({ palette }: { palette: Palette }) {
-  const a = useRef<THREE.Mesh>(null);
-  const b = useRef<THREE.Mesh>(null);
-  useFrame((state) => {
-    const t = state.clock.getElapsedTime();
-    if (a.current) {
-      a.current.rotation.z = t * 0.02;
-      a.current.position.x = Math.sin(t * 0.1) * 0.4 - 2;
-    }
-    if (b.current) {
-      b.current.rotation.z = -t * 0.015;
-      b.current.position.x = Math.cos(t * 0.08) * 0.4 + 2;
-    }
-  });
-  return (
-    <>
-      <mesh ref={a} position={[-2, 0.5, -3]}>
-        <planeGeometry args={[6, 6]} />
-        <meshBasicMaterial
-          color={palette.nebulaA}
-          transparent
-          opacity={0.12}
-          blending={THREE.AdditiveBlending}
-          depthWrite={false}
-        />
-      </mesh>
-      <mesh ref={b} position={[2, -0.5, -4]}>
-        <planeGeometry args={[7, 7]} />
-        <meshBasicMaterial
-          color={palette.nebulaB}
-          transparent
-          opacity={0.1}
-          blending={THREE.AdditiveBlending}
-          depthWrite={false}
-        />
-      </mesh>
-    </>
   );
 }
 
 function CameraDrift() {
   useFrame((state) => {
     const t = state.clock.getElapsedTime();
-    state.camera.position.x = Math.sin(t * 0.08) * 0.35;
-    state.camera.position.y = 0.6 + Math.cos(t * 0.06) * 0.15;
+    // Almost-imperceptible parallax drift, no zoom punches.
+    state.camera.position.x = Math.sin(t * 0.05) * 0.18;
+    state.camera.position.y = 0.6 + Math.cos(t * 0.04) * 0.08;
     state.camera.lookAt(0, 0, 0);
   });
   return null;
 }
 
 export default function HeroScene() {
-  // Pick palette based on visitor's local time-of-day. Recheck every 5 min.
-  const [palette, setPalette] = useState<Palette>(() => paletteFor(currentPhase()));
-
-  useEffect(() => {
-    const tick = () => setPalette(paletteFor(currentPhase()));
-    tick();
-    const id = window.setInterval(tick, 5 * 60 * 1000);
-    return () => window.clearInterval(id);
-  }, []);
-
   return (
     <Canvas
-      camera={{ position: [0, 0.6, 7], fov: 55 }}
+      camera={{ position: [0, 0.6, 8.5], fov: 50 }}
       dpr={[1, 2]}
       gl={{ antialias: true, alpha: true }}
     >
       <Suspense fallback={null}>
-        <color attach="background" args={[palette.bg]} />
-        <fog attach="fog" args={[palette.bg, 8, 18]} />
-        <Nebula palette={palette} />
-        <Galaxy palette={palette} />
-        <InfinityLoop color={palette.trail} />
-        <Stars radius={80} depth={50} count={4000} factor={4} fade speed={0.6} />
+        <color attach="background" args={[BG]} />
+        <fog attach="fog" args={[BG, 10, 22]} />
+        <Stars radius={90} depth={60} count={5000} factor={3} fade speed={0.4} />
+        <Galaxy />
+        <CoreGlow />
+        <Companion />
+        <InfinityStream />
         <CameraDrift />
       </Suspense>
     </Canvas>

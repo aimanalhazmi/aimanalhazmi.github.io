@@ -38,34 +38,34 @@ export function greetingFor(phase: Phase): string {
 
 const palettes: Record<Phase, Palette> = {
   morning: {
-    inside: '#f97316',     // amber sunrise
-    outside: '#fbbf24',    // gold
-    nebulaA: '#fb923c',
-    nebulaB: '#f472b6',
+    inside: '#fde68a',     // warm gold core
+    outside: '#fb7185',    // rose
+    nebulaA: '#f59e0b',
+    nebulaB: '#ec4899',
     bg: '#1a0a14',
     trail: '#fff5d6',
   },
   afternoon: {
-    inside: '#60a5fa',     // sky blue
-    outside: '#22d3ee',    // cyan
-    nebulaA: '#3b82f6',
-    nebulaB: '#22d3ee',
+    inside: '#a5f3fc',     // bright cyan core
+    outside: '#818cf8',    // indigo
+    nebulaA: '#06b6d4',
+    nebulaB: '#6366f1',
     bg: '#06121f',
     trail: '#ffffff',
   },
   evening: {
-    inside: '#ec4899',     // magenta
-    outside: '#f97316',    // sunset orange
-    nebulaA: '#db2777',
+    inside: '#fbcfe8',     // pink core
+    outside: '#a855f7',    // violet
+    nebulaA: '#ec4899',
     nebulaB: '#f59e0b',
     bg: '#15081a',
     trail: '#ffd8a8',
   },
   night: {
-    inside: '#7c5cff',     // deep purple (default)
-    outside: '#22d3ee',    // cyan
-    nebulaA: '#7c5cff',
-    nebulaB: '#22d3ee',
+    inside: '#c4b5fd',     // soft violet core
+    outside: '#67e8f9',    // bright cyan edge
+    nebulaA: '#8b5cf6',
+    nebulaB: '#06b6d4',
     bg: '#04040a',
     trail: '#ffffff',
   },
