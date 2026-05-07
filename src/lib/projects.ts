@@ -57,7 +57,9 @@ export async function getAllProjects(githubUser = 'aimanalhazmi'): Promise<Proje
       source: 'curated',
       featured: match?.featured ?? false,
       order: p.data.order ?? 0,
-      createdAt: match?.createdAt ?? '',
+      createdAt: p.data.started
+        ? p.data.started.toISOString()
+        : match?.createdAt ?? '',
       updatedAt: match?.updatedAt ?? '',
       language: match?.language ?? null,
       stars: match?.stars ?? 0,
