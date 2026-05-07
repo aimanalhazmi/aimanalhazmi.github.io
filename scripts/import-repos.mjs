@@ -11,24 +11,26 @@ const USER = 'aimanalhazmi';
 const PORTFOLIO_TOPIC = 'y-pub';
 const FEATURED_TOPIC = 'y-feat';
 
-const TAG_CASING = {
-  ai: 'AI', ml: 'ML', 'deep-learning': 'Deep Learning', nlp: 'NLP',
-  'computer-vision': 'Computer Vision', 'data-science': 'Data Science',
-  software: 'Software', backend: 'Backend', python: 'Python', java: 'Java',
-  pytorch: 'PyTorch', flutter: 'Flutter', healthcare: 'Healthcare',
-  finance: 'Finance', 'open-source': 'Open Source',
-};
+const canonical = JSON.parse(
+  await readFile(join(__dirname, '..', 'src/data/tag-canonical.json'), 'utf8')
+);
+const TAG_CASING = canonical.casing;
+const ACRONYMS = new Set(canonical.acronyms.map((a) => a.toUpperCase()));
 
 function normalizeTag(t) {
-  const k = t.toLowerCase();
+  const k = t.trim().toLowerCase();
   if (TAG_CASING[k]) return TAG_CASING[k];
-  return k.split('-').map((w) => (w ? w[0].toUpperCase() + w.slice(1) : w)).join(' ');
+  return k.split('-').map((w) => {
+    if (!w) return w;
+    if (ACRONYMS.has(w.toUpperCase())) return w.toUpperCase();
+    return w[0].toUpperCase() + w.slice(1);
+  }).join(' ');
 }
 
 function prettify(name) {
   return name.split(/[-_]/).filter(Boolean).map((w) => {
     const u = w.toUpperCase();
-    if (['ECG','NLP','AI','ML','API','CV','UI'].includes(u)) return u;
+    if (ACRONYMS.has(u)) return u;
     return w[0].toUpperCase() + w.slice(1);
   }).join(' ');
 }
@@ -68,9 +70,13 @@ function escapeYaml(s) {
 }
 
 function buildMarkdown(repo) {
-  const tags = (repo.topics ?? [])
-    .filter((t) => t !== PORTFOLIO_TOPIC && t !== FEATURED_TOPIC)
-    .map(normalizeTag);
+  const tags = Array.from(
+    new Set(
+      (repo.topics ?? [])
+        .filter((t) => t !== PORTFOLIO_TOPIC && t !== FEATURED_TOPIC)
+        .map(normalizeTag)
+    )
+  );
   const featured = (repo.topics ?? []).includes(FEATURED_TOPIC);
   const lines = [
     '---',

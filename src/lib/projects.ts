@@ -1,5 +1,6 @@
 import { getCollection } from 'astro:content';
 import { fetchPortfolioRepos, type GitHubProject } from './github';
+import { canonicalKey } from './tags';
 
 export type ProjectCard = {
   slug: string;
@@ -25,7 +26,7 @@ function unionTags(...lists: (string[] | undefined)[]): string[] {
   for (const list of lists) {
     if (!list) continue;
     for (const t of list) {
-      const key = t.toLowerCase();
+      const key = canonicalKey(t);
       if (!seen.has(key)) seen.set(key, t);
     }
   }

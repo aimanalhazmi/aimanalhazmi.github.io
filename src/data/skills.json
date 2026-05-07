@@ -1,16 +1,12 @@
 {
   "groups": [
     {
-      "group": "Programming",
+      "group": "AI / Machine Learning",
       "items": [
-        { "name": "Python", "icon": "python" },
-        { "name": "Java" },
-        { "name": "SQL" },
-        { "name": "R", "icon": "r" },
-        { "name": "JavaScript", "icon": "javascript" },
-        { "name": "PHP", "icon": "php" },
-        { "name": "C", "icon": "c" },
-        { "name": "Haskell", "icon": "haskell" }
+        { "name": "PyTorch", "icon": "pytorch" },
+        { "name": "TensorFlow", "icon": "tensorflow" },
+        { "name": "Hugging Face", "icon": "huggingface" },
+        { "name": "Neural Networks" }
       ]
     },
     {
@@ -18,7 +14,7 @@
       "items": [
         { "name": "LangChain", "icon": "langchain" },
         { "name": "RAG" },
-        { "name": "LoRA / QLoRA" },
+        { "name": "Fine-Tuning (LoRA / QLoRA)" },
         { "name": "MCP" },
         { "name": "Ollama", "icon": "ollama" },
         { "name": "LM Studio" },
@@ -26,35 +22,45 @@
       ]
     },
     {
-      "group": "AI / Machine Learning",
+      "group": "Programming Languages",
       "items": [
-        { "name": "PyTorch", "icon": "pytorch" },
-        { "name": "TensorFlow", "icon": "tensorflow" },
-        { "name": "HuggingFace", "icon": "huggingface" },
-        { "name": "Neural Networks" }
+        { "name": "Python", "icon": "python" },
+        { "name": "SQL" },
+        { "name": "Java" },
+        { "name": "JavaScript", "icon": "javascript" },
+        { "name": "R", "icon": "r" },
+        { "name": "C", "icon": "c" },
+        { "name": "PHP", "icon": "php" },
+        { "name": "Haskell", "icon": "haskell" }
       ]
     },
     {
       "group": "Data Science & Engineering",
       "items": [
         { "name": "Data Science Lifecycle" },
-        { "name": "Data Integration" },
-        { "name": "Preprocessing" },
         { "name": "Statistical Analysis" },
-        { "name": "Model Training & Evaluation" }
+        { "name": "Model Training & Evaluation" },
+        { "name": "Data Preprocessing" },
+        { "name": "Data Integration" }
       ]
     },
     {
-      "group": "Backend & DevOps",
+      "group": "Backend & APIs",
       "items": [
         { "name": "FastAPI", "icon": "fastapi" },
         { "name": "Flask", "icon": "flask" },
-        { "name": "Spring Boot", "icon": "springboot" },
+        { "name": "Streamlit", "icon": "streamlit" },
+        { "name": "Spring Boot", "icon": "springboot" }
+      ]
+    },
+    {
+      "group": "DevOps & Tools",
+      "items": [
         { "name": "Docker", "icon": "docker" },
+        { "name": "Linux", "icon": "linux" },
         { "name": "GitHub", "icon": "github" },
         { "name": "GitLab", "icon": "gitlab" },
-        { "name": "Jira", "icon": "jira" },
-        { "name": "Linux", "icon": "linux" }
+        { "name": "Jira", "icon": "jira" }
       ]
     },
     {

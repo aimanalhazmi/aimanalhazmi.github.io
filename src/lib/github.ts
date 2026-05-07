@@ -1,3 +1,5 @@
+import { normalizeTag, prettifyName } from './tags';
+
 export const PORTFOLIO_TOPIC = 'y-pub';
 export const FEATURED_TOPIC = 'y-feat';
 
@@ -16,45 +18,6 @@ export type GitHubProject = {
   featured: boolean;
   listed: boolean;
 };
-
-const TAG_CASING: Record<string, string> = {
-  ai: 'AI',
-  ml: 'ML',
-  'deep-learning': 'Deep Learning',
-  nlp: 'NLP',
-  'computer-vision': 'Computer Vision',
-  'data-science': 'Data Science',
-  software: 'Software',
-  backend: 'Backend',
-  python: 'Python',
-  java: 'Java',
-  pytorch: 'PyTorch',
-  flutter: 'Flutter',
-  healthcare: 'Healthcare',
-  finance: 'Finance',
-  'open-source': 'Open Source',
-};
-
-function normalizeTag(topic: string): string {
-  const key = topic.toLowerCase();
-  if (TAG_CASING[key]) return TAG_CASING[key];
-  return key
-    .split('-')
-    .map((w) => (w.length ? w[0].toUpperCase() + w.slice(1) : w))
-    .join(' ');
-}
-
-function prettifyName(name: string): string {
-  return name
-    .split(/[-_]/)
-    .filter(Boolean)
-    .map((w) => {
-      const upper = w.toUpperCase();
-      if (['ECG', 'NLP', 'AI', 'ML', 'API', 'CV', 'UI'].includes(upper)) return upper;
-      return w[0].toUpperCase() + w.slice(1);
-    })
-    .join(' ');
-}
 
 type GhRepo = {
   name: string;
@@ -77,9 +40,13 @@ function toProject(r: GhRepo): GitHubProject {
     slug: r.name.toLowerCase(),
     title: prettifyName(r.name),
     description: r.description ?? '',
-    tags: topics
-      .filter((t) => t !== PORTFOLIO_TOPIC && t !== FEATURED_TOPIC)
-      .map(normalizeTag),
+    tags: Array.from(
+      new Set(
+        topics
+          .filter((t) => t !== PORTFOLIO_TOPIC && t !== FEATURED_TOPIC)
+          .map(normalizeTag)
+      )
+    ),
     href: r.html_url,
     repoUrl: r.html_url,
     homepage: r.homepage && r.homepage.trim() ? r.homepage : null,
