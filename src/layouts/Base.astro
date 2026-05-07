@@ -82,10 +82,18 @@ const pageTitle = title ? `${title} · ${site.name}` : `${site.name} — ${site.
       const overlay = () => document.getElementById('warp-overlay');
 
       const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-      const coarse = window.matchMedia('(pointer: coarse)').matches;
-      const small = window.matchMedia('(max-width: 767px)').matches;
-      // Skip the warp entirely on mobile / coarse pointers / reduced motion.
-      const skipWarp = reduce || coarse || small;
+      const coarseMq = window.matchMedia('(pointer: coarse)');
+      const smallMq = window.matchMedia('(max-width: 767px)');
+      // Reduced-motion always wins. On mobile we only warp when the home page
+      // is involved (since that's the only page where the galaxy renders);
+      // desktop warps everywhere.
+      const isHome = (p: string) => p === '/' || p === '';
+      const shouldWarp = (from: string, to: string) => {
+        if (reduce) return false;
+        const constrained = coarseMq.matches || smallMq.matches;
+        if (!constrained) return true;
+        return isHome(from) || isHome(to);
+      };
       const DURATION = 600;
       // Hard ceiling: even if navigation hangs, never leave the page dimmed
       // longer than this. Covers slow networks and failed fetches.
@@ -123,10 +131,11 @@ const pageTitle = title ? `${title} · ${site.name}` : `${site.name} — ${site.
         document.body.style.opacity = '';
       }
 
-      if (!skipWarp) {
+      if (!reduce) {
         document.addEventListener('astro:before-preparation', (event) => {
           const ev = event as unknown as { from: URL; to: URL; loader: () => Promise<void> };
           if (ev.from.pathname === ev.to.pathname) return;
+          if (!shouldWarp(ev.from.pathname, ev.to.pathname)) return;
           startWarp();
           // Failsafe: if navigation never resolves (offline, 404 swallow, etc.)
           // restore the page so the user isn't stuck staring at a dim overlay.

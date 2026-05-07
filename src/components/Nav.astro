@@ -93,12 +93,14 @@ const isActive = (href: string) =>
 </div>
 
 <script>
-  const btn = document.getElementById('fab-toggle');
-  const menu = document.getElementById('fab-menu');
-  const iconOpen = document.getElementById('fab-icon-open');
-  const iconClose = document.getElementById('fab-icon-close');
+  // Live lookups (the DOM is replaced on every Astro view transition).
+  const $btn = () => document.getElementById('fab-toggle');
+  const $menu = () => document.getElementById('fab-menu');
+  const $iconOpen = () => document.getElementById('fab-icon-open');
+  const $iconClose = () => document.getElementById('fab-icon-close');
 
   function setOpen(open: boolean) {
+    const btn = $btn(), menu = $menu(), iconOpen = $iconOpen(), iconClose = $iconClose();
     if (!btn || !menu || !iconOpen || !iconClose) return;
     btn.setAttribute('aria-expanded', String(open));
     btn.setAttribute('aria-label', open ? 'Close menu' : 'Open menu');
@@ -108,7 +110,6 @@ const isActive = (href: string) =>
     if (open) {
       menu.classList.remove('hidden');
       document.body.style.overflow = 'hidden';
-      // next frame, fade in + reveal items
       requestAnimationFrame(() => {
         menu.style.opacity = '1';
         menu.querySelectorAll<HTMLElement>('.fab-menu-item').forEach((el) => {
@@ -127,20 +128,48 @@ const isActive = (href: string) =>
     }
   }
 
-  btn?.addEventListener('click', () => {
-    const open = btn.getAttribute('aria-expanded') === 'true';
-    setOpen(!open);
-  });
+  // Document-level delegation: survives every ClientRouter DOM swap because
+  // it's bound to `document`, which is never replaced. Astro dedupes module
+  // scripts, so this block runs exactly once per page lifetime.
+  document.addEventListener('click', (e) => {
+    const target = e.target as HTMLElement | null;
+    if (!target) return;
 
-  menu?.querySelectorAll('a').forEach((a) => {
-    a.addEventListener('click', () => setOpen(false));
+    // Toggle button (or any descendant of it like the SVG icons).
+    if (target.closest('#fab-toggle')) {
+      const btn = $btn();
+      if (!btn) return;
+      const open = btn.getAttribute('aria-expanded') === 'true';
+      setOpen(!open);
+      return;
+    }
+
+    // Any link inside the open menu closes it.
+    const link = target.closest('#fab-menu a');
+    if (link) setOpen(false);
   });
 
   document.addEventListener('keydown', (e) => {
-    if (e.key === 'Escape' && btn?.getAttribute('aria-expanded') === 'true') setOpen(false);
+    if (e.key === 'Escape' && $btn()?.getAttribute('aria-expanded') === 'true') setOpen(false);
   });
 
   window.addEventListener('resize', () => {
-    if (window.innerWidth >= 768 && btn?.getAttribute('aria-expanded') === 'true') setOpen(false);
+    if (window.innerWidth >= 768 && $btn()?.getAttribute('aria-expanded') === 'true') setOpen(false);
+  });
+
+  // After every Astro page transition, ensure the menu starts closed and the
+  // body scroll lock is released (in case it was open during navigation).
+  document.addEventListener('astro:after-swap', () => {
+    document.body.style.overflow = '';
+    const menu = $menu();
+    if (menu) {
+      menu.classList.add('hidden');
+      menu.style.opacity = '0';
+    }
+    const btn = $btn();
+    btn?.setAttribute('aria-expanded', 'false');
+    btn?.setAttribute('aria-label', 'Open menu');
+    $iconOpen()?.classList.remove('hidden');
+    $iconClose()?.classList.add('hidden');
   });
 </script>

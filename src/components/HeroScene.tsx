@@ -3,21 +3,26 @@ import { Stars } from '@react-three/drei';
 import { Suspense, useEffect, useMemo, useRef, useState } from 'react';
 import * as THREE from 'three';
 
-// Decide once on mount whether the scene should run at all, and at what budget.
-// Mobile, coarse-pointer, reduced-motion, and low-memory devices fall back to
-// the static gradient painted by Base.astro.
-type Profile = { run: boolean; quality: 'low' | 'high' };
-function detectProfile(): Profile {
-  if (typeof window === 'undefined') return { run: false, quality: 'low' };
+// Decide whether the scene should run. Reduced-motion always wins. On mobile /
+// coarse-pointer / low-memory devices we still allow the galaxy on the home
+// page (where it's the visual centerpiece), but skip it on inner pages so
+// navigation stays snappy. Desktop runs everywhere.
+type Profile = { run: boolean };
+function detectProfile(pathname: string): Profile {
+  if (typeof window === 'undefined') return { run: false };
   const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  if (reduce) return { run: false };
   const coarse = window.matchMedia('(pointer: coarse)').matches;
   const small = window.matchMedia('(max-width: 767px)').matches;
-  // navigator.deviceMemory is Chrome-only; treat <= 4 GB as low-end if present.
   const lowMem =
     typeof (navigator as unknown as { deviceMemory?: number }).deviceMemory === 'number' &&
     (navigator as unknown as { deviceMemory: number }).deviceMemory <= 4;
-  if (reduce || coarse || small || lowMem) return { run: false, quality: 'low' };
-  return { run: true, quality: 'high' };
+  const constrained = coarse || small || lowMem;
+  if (constrained) {
+    const isHome = pathname === '/' || pathname === '';
+    return { run: isHome };
+  }
+  return { run: true };
 }
 
 // Hash a pathname into a stable angle (radians) so every route lands on a
@@ -368,9 +373,12 @@ function useFrameloop(): 'always' | 'never' {
 }
 
 export default function HeroScene() {
-  const [profile] = useState<Profile>(() => detectProfile());
+  const path = usePathname();
+  const profile = useMemo(() => detectProfile(path), [path]);
   const frameloop = useFrameloop();
-  // Bail out before any Three.js code touches the GPU.
+  // Bail out before any Three.js code touches the GPU. On mobile this means
+  // the canvas only mounts on the home page; inner pages get the static
+  // gradient fallback that Base.astro paints under it.
   if (!profile.run) return null;
 
   return (
