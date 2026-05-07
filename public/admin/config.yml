@@ -2,8 +2,6 @@ backend:
   name: github
   repo: aimanalhazmi/aimanalhazmi.github.io
   branch: redesign-astro-3d
-  # base_url is the OAuth proxy you'll deploy on Cloudflare Workers (free).
-  # Replace this once the worker is deployed:
   base_url: https://me.aimanyalhazmi.workers.dev
   auth_endpoint: api/auth
 
@@ -66,11 +64,11 @@ collections:
       - { label: Order, name: order, widget: number, default: 0, required: false, value_type: int }
       - { label: Body, name: body, widget: markdown }
 
-  - name: pages
-    label: Pages (CV / About data)
+  - name: cv
+    label: CV
     files:
-      - label: Site profile
-        name: site
+      - label: Profile
+        name: profile
         file: src/data/profile.json
         fields:
           - { label: Name, name: name, widget: string }
@@ -78,3 +76,96 @@ collections:
           - { label: Location, name: location, widget: string }
           - { label: Email, name: email, widget: string }
           - { label: Description, name: description, widget: text }
+          - label: Social
+            name: social
+            widget: object
+            fields:
+              - { label: GitHub, name: github, widget: string, required: false }
+              - { label: LinkedIn, name: linkedin, widget: string, required: false }
+              - { label: "Email (mailto:)", name: email, widget: string, required: false }
+
+      - label: Experience
+        name: experience
+        file: src/data/experience.json
+        fields:
+          - label: Entries
+            name: entries
+            widget: list
+            label_singular: Entry
+            summary: "{{fields.role}} — {{fields.org}}"
+            fields:
+              - { label: Role, name: role, widget: string }
+              - { label: Organization, name: org, widget: string }
+              - { label: Period, name: period, widget: string, hint: "e.g. Sep 2022 – Present" }
+              - label: Bullets
+                name: bullets
+                widget: list
+                field: { label: Bullet, name: bullet, widget: string }
+
+      - label: Education
+        name: education
+        file: src/data/education.json
+        fields:
+          - label: Entries
+            name: entries
+            widget: list
+            label_singular: Entry
+            summary: "{{fields.school}} — {{fields.degree}}"
+            fields:
+              - { label: School, name: school, widget: string }
+              - { label: Degree, name: degree, widget: string }
+              - { label: Period, name: period, widget: string }
+              - { label: Detail, name: detail, widget: text }
+
+      - label: Skills
+        name: skills
+        file: src/data/skills.json
+        fields:
+          - label: Groups
+            name: groups
+            widget: list
+            label_singular: Group
+            summary: "{{fields.group}}"
+            fields:
+              - { label: Group Name, name: group, widget: string }
+              - label: Items
+                name: items
+                widget: list
+                label_singular: Skill
+                summary: "{{fields.name}}"
+                fields:
+                  - { label: Name, name: name, widget: string }
+                  - { label: Icon (simple-icons slug), name: icon, widget: string, required: false }
+                  - { label: Emoji, name: emoji, widget: string, required: false }
+
+      - label: Societies
+        name: societies
+        file: src/data/societies.json
+        fields:
+          - label: Memberships
+            name: memberships
+            widget: list
+            label_singular: Membership
+            summary: "{{fields.role}} — {{fields.org}}"
+            fields:
+              - { label: Role, name: role, widget: string }
+              - { label: Organization, name: org, widget: string }
+              - { label: URL, name: url, widget: string, required: false }
+              - { label: Logo, name: logo, widget: image, required: false }
+
+      - label: Interests
+        name: interests
+        file: src/data/interests.json
+        fields:
+          - label: Items
+            name: items
+            widget: list
+            label_singular: Interest
+            summary: "{{fields.name}} ({{fields.category}})"
+            fields:
+              - { label: Name, name: name, widget: string }
+              - { label: Emoji, name: emoji, widget: string }
+              - label: Category
+                name: category
+                widget: select
+                options: [Tech, Creative, Knowledge, Lifestyle]

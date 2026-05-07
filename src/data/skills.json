@@ -1,0 +1,69 @@
+{
+  "groups": [
+    {
+      "group": "Programming",
+      "items": [
+        { "name": "Python", "icon": "python" },
+        { "name": "Java" },
+        { "name": "SQL" },
+        { "name": "R", "icon": "r" },
+        { "name": "JavaScript", "icon": "javascript" },
+        { "name": "PHP", "icon": "php" },
+        { "name": "C", "icon": "c" },
+        { "name": "Haskell", "icon": "haskell" }
+      ]
+    },
+    {
+      "group": "Generative AI & LLMs",
+      "items": [
+        { "name": "LangChain", "icon": "langchain" },
+        { "name": "RAG" },
+        { "name": "LoRA / QLoRA" },
+        { "name": "MCP" },
+        { "name": "Ollama", "icon": "ollama" },
+        { "name": "LM Studio" },
+        { "name": "Llama.cpp" }
+      ]
+    },
+    {
+      "group": "AI / Machine Learning",
+      "items": [
+        { "name": "PyTorch", "icon": "pytorch" },
+        { "name": "TensorFlow", "icon": "tensorflow" },
+        { "name": "HuggingFace", "icon": "huggingface" },
+        { "name": "Neural Networks" }
+      ]
+    },
+    {
+      "group": "Data Science & Engineering",
+      "items": [
+        { "name": "Data Science Lifecycle" },
+        { "name": "Data Integration" },
+        { "name": "Preprocessing" },
+        { "name": "Statistical Analysis" },
+        { "name": "Model Training & Evaluation" }
+      ]
+    },
+    {
+      "group": "Backend & DevOps",
+      "items": [
+        { "name": "FastAPI", "icon": "fastapi" },
+        { "name": "Flask", "icon": "flask" },
+        { "name": "Spring Boot", "icon": "springboot" },
+        { "name": "Docker", "icon": "docker" },
+        { "name": "GitHub", "icon": "github" },
+        { "name": "GitLab", "icon": "gitlab" },
+        { "name": "Jira", "icon": "jira" },
+        { "name": "Linux", "icon": "linux" }
+      ]
+    },
+    {
+      "group": "Languages",
+      "items": [
+        { "name": "Arabic (Native)", "emoji": "🇾🇪" },
+        { "name": "German (Fluent)", "emoji": "🇩🇪" },
+        { "name": "English (Advanced)", "emoji": "🇬🇧" }
+      ]
+    }
+  ]
+}

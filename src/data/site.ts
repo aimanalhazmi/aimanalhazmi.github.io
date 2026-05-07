@@ -1,15 +1,12 @@
+import profile from './profile.json';
+
 export const site = {
-  name: 'Aiman Al-Hazmi',
-  tagline: 'MSc Computer Science · AI & ML Engineer · Software Developer',
-  location: 'Berlin, Germany',
-  email: 'aimanalhazmi@gmail.com',
-  description:
-    "Master's student in Computer Science at TU Berlin focused on Data Science and Software Engineering. Currently working as a software developer with a strong interest in AI, Deep Learning, Computer Vision and Natural Language Processing.",
-  social: {
-    github: 'https://github.com/aimanalhazmi',
-    linkedin: 'https://www.linkedin.com/in/aimanalhazmi',
-    email: 'mailto:aimanalhazmi@gmail.com',
-  },
+  name: profile.name,
+  tagline: profile.tagline,
+  location: profile.location,
+  email: profile.email,
+  description: profile.description,
+  social: profile.social,
   nav: [
     { href: '/', label: 'Home' },
     { href: '/#about', label: 'About' },
