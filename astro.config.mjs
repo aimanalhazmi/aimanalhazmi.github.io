@@ -8,8 +8,7 @@ import tailwindcss from '@tailwindcss/vite';
 export default defineConfig({
   site: 'https://aimanalhazmi.github.io',
 
-  // 1. Change this to 'static'
-  output: 'static',
+  output: 'server',
 
   adapter: cloudflare(),
 
