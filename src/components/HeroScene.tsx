@@ -3,6 +3,23 @@ import { Stars } from '@react-three/drei';
 import { Suspense, useEffect, useMemo, useRef, useState } from 'react';
 import * as THREE from 'three';
 
+// Decide once on mount whether the scene should run at all, and at what budget.
+// Mobile, coarse-pointer, reduced-motion, and low-memory devices fall back to
+// the static gradient painted by Base.astro.
+type Profile = { run: boolean; quality: 'low' | 'high' };
+function detectProfile(): Profile {
+  if (typeof window === 'undefined') return { run: false, quality: 'low' };
+  const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const coarse = window.matchMedia('(pointer: coarse)').matches;
+  const small = window.matchMedia('(max-width: 767px)').matches;
+  // navigator.deviceMemory is Chrome-only; treat <= 4 GB as low-end if present.
+  const lowMem =
+    typeof (navigator as unknown as { deviceMemory?: number }).deviceMemory === 'number' &&
+    (navigator as unknown as { deviceMemory: number }).deviceMemory <= 4;
+  if (reduce || coarse || small || lowMem) return { run: false, quality: 'low' };
+  return { run: true, quality: 'high' };
+}
+
 // Hash a pathname into a stable angle (radians) so every route lands on a
 // different "side" of the galaxy automatically — no per-page config needed.
 function pathnameAngle(p: string): number {
@@ -39,7 +56,7 @@ const ARM_VIOLET = '#9b7bff';
 const DUST = '#3a1e10';
 const BG = '#02020a';
 
-function Galaxy({ count = 14000 }: { count?: number }) {
+function Galaxy({ count = 8000 }: { count?: number }) {
   const ref = useRef<THREE.Group>(null);
 
   const { positions, colors } = useMemo(() => {
@@ -212,9 +229,11 @@ function Companion() {
 
 // Figure-8 stream: many particles flowing along a 3D lemniscate path.
 // Color gradient along the loop: gold near the crossing, blue out on the lobes.
-function InfinityStream({ count = 1400 }: { count?: number }) {
+function InfinityStream({ count = 700 }: { count?: number }) {
   const ref = useRef<THREE.Points>(null);
 
+  // Positions and base colors are static — the lemniscate doesn't deform.
+  // We rotate the whole group instead of rebuilding XYZ every frame.
   const { positions, colors, baseColors, phases } = useMemo(() => {
     const positions = new Float32Array(count * 3);
     const colors = new Float32Array(count * 3);
@@ -223,11 +242,20 @@ function InfinityStream({ count = 1400 }: { count?: number }) {
     const gold = new THREE.Color(CORE_GOLD);
     const blue = new THREE.Color(ARM_BLUE);
     const violet = new THREE.Color(ARM_VIOLET);
+    const a = 3.6;
 
     for (let i = 0; i < count; i++) {
-      phases[i] = i / count;
-      const t = phases[i];
-      const nearCross = Math.abs(Math.sin(t * Math.PI * 2));
+      const t = i / count;
+      phases[i] = t;
+      const phi = t * Math.PI * 2;
+      const sinPhi = Math.sin(phi);
+      const cosPhi = Math.cos(phi);
+      const denom = 1 + sinPhi * sinPhi;
+      positions[i * 3] = (a * cosPhi) / denom;
+      positions[i * 3 + 1] = sinPhi * 0.35;
+      positions[i * 3 + 2] = (a * sinPhi * cosPhi) / denom;
+
+      const nearCross = Math.abs(sinPhi);
       const c = gold.clone().lerp(blue, nearCross);
       c.lerp(violet, nearCross * 0.25);
       baseColors[i * 3] = c.r;
@@ -243,20 +271,11 @@ function InfinityStream({ count = 1400 }: { count?: number }) {
   useFrame((state) => {
     if (!ref.current) return;
     const time = state.clock.getElapsedTime();
-    const a = 3.6;
-    // Three bright pulses traveling around the loop.
     const PULSES = 3;
-    const flow = (time / 8) % 1; // 8s per circuit
+    const flow = (time / 8) % 1;
+    const colAttr = ref.current.geometry.getAttribute('color') as THREE.BufferAttribute;
+    const colArr = colAttr.array as Float32Array;
     for (let i = 0; i < count; i++) {
-      const phi = phases[i] * Math.PI * 2;
-      const denom = 1 + Math.sin(phi) * Math.sin(phi);
-      const x = (a * Math.cos(phi)) / denom;
-      const z = (a * Math.sin(phi) * Math.cos(phi)) / denom;
-      positions[i * 3] = x;
-      positions[i * 3 + 1] = Math.sin(phi) * 0.35;
-      positions[i * 3 + 2] = z;
-
-      // Brightness pulse: distance from any of the PULSES traveling positions.
       const p = phases[i];
       let minD = 1;
       for (let k = 0; k < PULSES; k++) {
@@ -264,20 +283,15 @@ function InfinityStream({ count = 1400 }: { count?: number }) {
         const d = Math.min(Math.abs(p - head), 1 - Math.abs(p - head));
         if (d < minD) minD = d;
       }
-      // Sharp comet-like falloff with a long fading tail.
       const pulse = Math.exp(-minD * 60) * 2.5 + Math.exp(-minD * 14) * 0.6;
-      const dim = 0.25; // baseline dimness so non-pulse particles fade back
-      const k = Math.min(1, dim + pulse);
-      colors[i * 3] = baseColors[i * 3] * k;
-      colors[i * 3 + 1] = baseColors[i * 3 + 1] * k;
-      colors[i * 3 + 2] = baseColors[i * 3 + 2] * k;
+      const k = Math.min(1, 0.25 + pulse);
+      const i3 = i * 3;
+      colArr[i3] = baseColors[i3] * k;
+      colArr[i3 + 1] = baseColors[i3 + 1] * k;
+      colArr[i3 + 2] = baseColors[i3 + 2] * k;
     }
-    const posAttr = ref.current.geometry.getAttribute('position') as THREE.BufferAttribute;
-    posAttr.needsUpdate = true;
-    const colAttr = ref.current.geometry.getAttribute('color') as THREE.BufferAttribute;
     colAttr.needsUpdate = true;
 
-    // Slow tumble of the whole symbol so it reads as 3D.
     ref.current.rotation.y = 0.2 + Math.sin(time * 0.15) * 0.5;
     ref.current.rotation.x = 0.45 + Math.sin(time * 0.1) * 0.15;
     ref.current.rotation.z = 0.15;
@@ -339,21 +353,41 @@ function CameraDrift() {
   return null;
 }
 
+// Pause the WebGL render loop when the tab is hidden so the canvas doesn't
+// burn battery in a background tab. `frameloop` is reactive in r3f.
+function useFrameloop(): 'always' | 'never' {
+  const [hidden, setHidden] = useState(
+    typeof document === 'undefined' ? false : document.hidden,
+  );
+  useEffect(() => {
+    const onVis = () => setHidden(document.hidden);
+    document.addEventListener('visibilitychange', onVis);
+    return () => document.removeEventListener('visibilitychange', onVis);
+  }, []);
+  return hidden ? 'never' : 'always';
+}
+
 export default function HeroScene() {
+  const [profile] = useState<Profile>(() => detectProfile());
+  const frameloop = useFrameloop();
+  // Bail out before any Three.js code touches the GPU.
+  if (!profile.run) return null;
+
   return (
     <Canvas
       camera={{ position: [0, 0.6, 8.5], fov: 50 }}
-      dpr={[1, 2]}
-      gl={{ antialias: true, alpha: true }}
+      dpr={[1, 1.5]}
+      gl={{ antialias: true, alpha: true, powerPreference: 'high-performance' }}
+      frameloop={frameloop}
     >
       <Suspense fallback={null}>
         <color attach="background" args={[BG]} />
         <fog attach="fog" args={[BG, 10, 22]} />
-        <Stars radius={90} depth={60} count={5000} factor={3} fade speed={0.4} />
-        <Galaxy />
+        <Stars radius={90} depth={60} count={2000} factor={3} fade speed={0.4} />
+        <Galaxy count={8000} />
         <CoreGlow />
         <Companion />
-        <InfinityStream />
+        <InfinityStream count={700} />
         <CameraDrift />
       </Suspense>
     </Canvas>

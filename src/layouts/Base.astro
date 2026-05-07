@@ -27,9 +27,22 @@ const pageTitle = title ? `${title} · ${site.name}` : `${site.name} — ${site.
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
+      rel="preload"
+      as="style"
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Space+Grotesk:wght@500;600;700&family=JetBrains+Mono:wght@400;500&display=swap"
+    />
+    <link
       href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Space+Grotesk:wght@500;600;700&family=JetBrains+Mono:wght@400;500&display=swap"
       rel="stylesheet"
+      media="print"
+      onload="this.media='all'"
     />
+    <noscript>
+      <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Space+Grotesk:wght@500;600;700&family=JetBrains+Mono:wght@400;500&display=swap"
+        rel="stylesheet"
+      />
+    </noscript>
     <title>{pageTitle}</title>
     <meta name="description" content={description} />
     {noindex && <meta name="robots" content="noindex, nofollow" />}
@@ -41,6 +54,12 @@ const pageTitle = title ? `${title} · ${site.name}` : `${site.name} — ${site.
   <body>
     <!-- Persistent galaxy: kept alive across page navigations via transition:persist. -->
     <div id="galaxy-bg" transition:persist="galaxy-bg" class="fixed inset-0 -z-10 pointer-events-none origin-center will-change-transform" aria-hidden="true">
+      <!-- Static gradient fallback: shown immediately, also remains as the entire
+           background on mobile / reduced-motion (HeroScene returns null there). -->
+      <div
+        class="absolute inset-0"
+        style="background: radial-gradient(ellipse at 50% 40%, #1a1633 0%, #0a0a18 45%, #02020a 100%);"
+      ></div>
       <HeroScene client:only="react" />
       <div id="galaxy-veil" class="absolute inset-0 bg-[rgba(7,7,11,0.35)]"></div>
     </div>
@@ -63,53 +82,78 @@ const pageTitle = title ? `${title} · ${site.name}` : `${site.name} — ${site.
       const overlay = () => document.getElementById('warp-overlay');
 
       const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-      const DURATION = 700;
+      const coarse = window.matchMedia('(pointer: coarse)').matches;
+      const small = window.matchMedia('(max-width: 767px)').matches;
+      // Skip the warp entirely on mobile / coarse pointers / reduced motion.
+      const skipWarp = reduce || coarse || small;
+      const DURATION = 600;
+      // Hard ceiling: even if navigation hangs, never leave the page dimmed
+      // longer than this. Covers slow networks and failed fetches.
+      const FAILSAFE_MS = 2500;
+
+      let failsafeTimer: number | null = null;
 
       function startWarp() {
         const g = galaxy(), v = veil(), o = overlay();
         if (!g || !v || !o) return;
         g.style.transition = `transform ${DURATION}ms cubic-bezier(0.5, 0, 0.9, 0.4)`;
-        g.style.transform = 'scale(10)';
+        g.style.transform = 'scale(8)';
         v.style.transition = `background-color ${DURATION}ms ease-in`;
         v.style.backgroundColor = 'rgba(0,0,0,0.7)';
         o.style.transition = `opacity ${DURATION}ms ease-in`;
         o.style.opacity = '1';
-        document.body.style.transition = 'opacity 450ms ease-in';
-        document.body.style.opacity = '0.15';
+        document.body.style.transition = 'opacity 400ms ease-in';
+        document.body.style.opacity = '0.2';
       }
 
       function endWarp() {
+        if (failsafeTimer !== null) {
+          clearTimeout(failsafeTimer);
+          failsafeTimer = null;
+        }
         const g = galaxy(), v = veil(), o = overlay();
         if (!g || !v || !o) return;
-        g.style.transition = 'transform 600ms ease-out';
+        g.style.transition = 'transform 500ms ease-out';
         g.style.transform = '';
-        v.style.transition = 'background-color 600ms ease-out';
+        v.style.transition = 'background-color 500ms ease-out';
         v.style.backgroundColor = '';
-        o.style.transition = 'opacity 500ms ease-out';
+        o.style.transition = 'opacity 400ms ease-out';
         o.style.opacity = '0';
-        document.body.style.transition = 'opacity 350ms ease-out';
+        document.body.style.transition = 'opacity 300ms ease-out';
         document.body.style.opacity = '';
       }
 
-      if (!reduce) {
-        // Astro fires this on every internal navigation (ClientRouter). We extend
-        // the prep step to wait out the warp, so the swap happens after the zoom.
+      if (!skipWarp) {
         document.addEventListener('astro:before-preparation', (event) => {
-          // Only treat real path changes as warps (skip same-page hash links).
           const ev = event as unknown as { from: URL; to: URL; loader: () => Promise<void> };
           if (ev.from.pathname === ev.to.pathname) return;
           startWarp();
+          // Failsafe: if navigation never resolves (offline, 404 swallow, etc.)
+          // restore the page so the user isn't stuck staring at a dim overlay.
+          if (failsafeTimer !== null) clearTimeout(failsafeTimer);
+          failsafeTimer = window.setTimeout(endWarp, FAILSAFE_MS);
+
           const orig = ev.loader;
           ev.loader = async () => {
-            await Promise.all([
-              orig(),
-              new Promise((r) => setTimeout(r, DURATION)),
-            ]);
+            try {
+              await Promise.all([
+                orig(),
+                new Promise((r) => setTimeout(r, DURATION)),
+              ]);
+            } catch (err) {
+              // Loader failed — clear the warp immediately so the user sees
+              // the current page (or the browser's own error UI) instead of dim.
+              endWarp();
+              throw err;
+            }
           };
         });
-        // After Astro swaps in the new page DOM, release the warp state.
         document.addEventListener('astro:after-swap', () => {
           window.requestAnimationFrame(endWarp);
+        });
+        // Belt-and-braces: ClientRouter dispatches this when navigation fails.
+        document.addEventListener('astro:page-load', () => {
+          if (failsafeTimer !== null) endWarp();
         });
       }
     </script>
