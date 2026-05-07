@@ -122,7 +122,7 @@ async function fetchUserReposUncached(user: string): Promise<GitHubProject[]> {
     }
     const repos = (await res.json()) as GhRepo[];
     return repos
-      .filter((r) => !r.fork && !r.archived && !r.private)
+      .filter((r) => !r.archived && !r.private)
       .map(toProject)
       .sort((a, b) => (a.updatedAt < b.updatedAt ? 1 : -1));
   } catch (err) {
