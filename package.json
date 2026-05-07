@@ -9,7 +9,8 @@
     "build": "astro build",
     "preview": "astro preview",
     "astro": "astro",
-    "deploy:worker": "wrangler deploy"
+    "deploy:worker": "wrangler deploy",
+    "import:projects": "node scripts/import-repos.mjs"
   },
   "dependencies": {
     "@astrojs/mdx": "^4.0.0",

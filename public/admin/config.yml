@@ -62,6 +62,7 @@ collections:
         default: []
       - { label: Featured, name: featured, widget: boolean, default: false, required: false }
       - { label: Order, name: order, widget: number, default: 0, required: false, value_type: int }
+      - { label: Started, name: started, widget: datetime, format: "YYYY-MM-DD", time_format: false, required: false, hint: "Real start date — overrides GitHub created_at for sort order" }
       - { label: Body, name: body, widget: markdown }
 
   - name: cv
