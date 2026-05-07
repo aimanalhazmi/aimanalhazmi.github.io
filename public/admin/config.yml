@@ -1,7 +1,7 @@
 backend:
   name: github
   repo: aimanalhazmi/aimanalhazmi.github.io
-  branch: redesign-astro-3d
+  branch: main
   base_url: https://me.aimanyalhazmi.workers.dev
   auth_endpoint: api/auth
 
