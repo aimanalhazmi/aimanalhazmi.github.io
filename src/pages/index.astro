@@ -1,7 +1,5 @@
 ---
 import Base from '~/layouts/Base.astro';
-import HeroScene from '~/components/HeroScene';
-import HeroParallax from '~/components/HeroParallax';
 import Greeting from '~/components/Greeting';
 import Reveal from '~/components/Reveal';
 import ScrollSection from '~/components/ScrollSection';
@@ -19,12 +17,7 @@ const posts = (await getCollection('blog'))
 
 <Base>
   <!-- HERO -->
-  <section class="relative min-h-[92vh] flex items-center overflow-hidden">
-    <HeroParallax client:load>
-      <HeroScene client:only="react" />
-    </HeroParallax>
-    <div class="absolute inset-0 -z-0 bg-gradient-to-b from-transparent via-transparent to-[var(--color-bg)] pointer-events-none"></div>
-
+  <section class="relative min-h-[92vh] flex items-center">
     <div class="relative z-10 max-w-6xl mx-auto px-6 py-24 grid md:grid-cols-2 gap-10 items-center">
       <div>
         <Reveal client:load>
@@ -52,7 +45,7 @@ const posts = (await getCollection('blog'))
 
   <!-- ABOUT -->
   <ScrollSection client:load className="max-w-5xl mx-auto px-6 py-24 scroll-mt-20 block">
-    <div id="about">
+    <div id="about" class="glass p-8 md:p-12">
       <p class="text-xs uppercase tracking-[0.3em] text-[var(--color-muted)] mb-3">About</p>
       <h2 class="font-[var(--font-display)] text-3xl md:text-4xl font-semibold">A little about me.</h2>
 

@@ -1,7 +1,36 @@
 import { Canvas, useFrame } from '@react-three/fiber';
 import { Stars } from '@react-three/drei';
-import { Suspense, useMemo, useRef } from 'react';
+import { Suspense, useEffect, useMemo, useRef, useState } from 'react';
 import * as THREE from 'three';
+
+// Hash a pathname into a stable angle (radians) so every route lands on a
+// different "side" of the galaxy automatically — no per-page config needed.
+function pathnameAngle(p: string): number {
+  let h = 2166136261;
+  for (let i = 0; i < p.length; i++) {
+    h ^= p.charCodeAt(i);
+    h = Math.imul(h, 16777619);
+  }
+  return ((h >>> 0) % 36000) / 36000 * Math.PI * 2;
+}
+
+// Reactive pathname hook — updates after every Astro view transition so the
+// persistent galaxy island can re-orient when the visitor navigates.
+function usePathname(): string {
+  const [path, setPath] = useState(() =>
+    typeof window === 'undefined' ? '/' : window.location.pathname,
+  );
+  useEffect(() => {
+    const update = () => setPath(window.location.pathname);
+    document.addEventListener('astro:after-swap', update);
+    window.addEventListener('popstate', update);
+    return () => {
+      document.removeEventListener('astro:after-swap', update);
+      window.removeEventListener('popstate', update);
+    };
+  }, []);
+  return path;
+}
 
 // Andromeda-inspired palette (locked, independent of time-of-day).
 const CORE_GOLD = '#f5d58a';
@@ -10,7 +39,7 @@ const ARM_VIOLET = '#9b7bff';
 const DUST = '#3a1e10';
 const BG = '#02020a';
 
-function Galaxy({ count = 18000 }: { count?: number }) {
+function Galaxy({ count = 14000 }: { count?: number }) {
   const ref = useRef<THREE.Group>(null);
 
   const { positions, colors } = useMemo(() => {
@@ -75,14 +104,21 @@ function Galaxy({ count = 18000 }: { count?: number }) {
     return { positions, colors };
   }, [count]);
 
+  // Per-route base angle so each page views the galaxy from a different side.
+  const path = usePathname();
+  const targetAngle = useMemo(() => pathnameAngle(path), [path]);
+
+  useEffect(() => {
+    if (ref.current) ref.current.rotation.y = targetAngle;
+  }, [targetAngle]);
+
   // Slow majestic rotation (~one revolution per ~4 minutes — perceived as drift).
   useFrame((_, delta) => {
     if (ref.current) ref.current.rotation.y += delta * 0.025;
   });
 
-  // Tilt closer to edge-on for the Andromeda profile.
   return (
-    <group ref={ref} rotation={[1.05, 0, 0.05]}>
+    <group ref={ref} rotation={[1.05, targetAngle, 0.05]}>
       <points>
         <bufferGeometry>
           <bufferAttribute attach="attributes-position" args={[positions, 3]} />
@@ -267,11 +303,37 @@ function InfinityStream({ count = 1400 }: { count?: number }) {
 }
 
 function CameraDrift() {
+  const scrollY = useRef(0);
+  const path = usePathname();
+  const home = path === '/' || path === '';
+
+  useEffect(() => {
+    const onScroll = () => {
+      scrollY.current = window.scrollY;
+    };
+    onScroll();
+    window.addEventListener('scroll', onScroll, { passive: true });
+    return () => window.removeEventListener('scroll', onScroll);
+  }, []);
+
   useFrame((state) => {
     const t = state.clock.getElapsedTime();
-    // Almost-imperceptible parallax drift, no zoom punches.
-    state.camera.position.x = Math.sin(t * 0.05) * 0.18;
-    state.camera.position.y = 0.6 + Math.cos(t * 0.04) * 0.08;
+    if (home) {
+      // Scroll-driven flythrough: dolly toward the core and arc sideways as the
+      // visitor scrolls down the homepage. Maxes out around 2200px scrolled.
+      const max = 2200;
+      const k = Math.min(1, scrollY.current / max);
+      const dolly = 8.5 - k * 4.5; // 8.5 → 4.0
+      const arc = k * Math.PI * 0.35;
+      state.camera.position.x = Math.sin(arc) * (8.5 - dolly + 0.5) + Math.sin(t * 0.05) * 0.18;
+      state.camera.position.y = 0.6 + Math.cos(t * 0.04) * 0.08 - k * 0.4;
+      state.camera.position.z = Math.cos(arc) * dolly;
+    } else {
+      // Idle parallax drift on inner pages.
+      state.camera.position.x = Math.sin(t * 0.05) * 0.18;
+      state.camera.position.y = 0.6 + Math.cos(t * 0.04) * 0.08;
+      state.camera.position.z = 8.5;
+    }
     state.camera.lookAt(0, 0, 0);
   });
   return null;

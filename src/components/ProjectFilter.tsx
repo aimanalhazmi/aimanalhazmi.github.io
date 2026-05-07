@@ -102,16 +102,12 @@ export default function ProjectFilter({ projects }: { projects: ProjectItem[] })
 
   return (
     <div>
-      <div className="flex flex-wrap items-center gap-2 mb-3">
+      <div className="flex flex-wrap items-center gap-2.5 mb-4">
         <button
           onClick={clear}
-          className={`px-3.5 py-1.5 rounded-full text-xs tracking-wide border transition-colors ${
-            active.length === 0
-              ? 'bg-white text-[#0b0b12] border-transparent'
-              : 'bg-white/5 text-[var(--color-muted)] border-[var(--color-border)] hover:text-white hover:border-[var(--color-accent)]'
-          }`}
+          className={`pill ${active.length === 0 ? 'pill-active' : ''}`}
         >
-          All <span className="opacity-60">· {projects.length}</span>
+          All <span className="pill-count">{projects.length}</span>
         </button>
         {allTags.map((tag) => {
           const isActive = active.includes(tag);
@@ -119,20 +115,16 @@ export default function ProjectFilter({ projects }: { projects: ProjectItem[] })
             <button
               key={tag}
               onClick={() => toggle(tag)}
-              className={`px-3.5 py-1.5 rounded-full text-xs tracking-wide border transition-colors ${
-                isActive
-                  ? 'bg-[var(--color-accent)] text-white border-transparent'
-                  : 'bg-white/5 text-[var(--color-muted)] border-[var(--color-border)] hover:text-white hover:border-[var(--color-accent)]'
-              }`}
+              className={`pill ${isActive ? 'pill-active' : ''}`}
               aria-pressed={isActive}
             >
-              {tag} <span className="opacity-60">· {counts.get(tag)}</span>
+              {tag} <span className="pill-count">{counts.get(tag)}</span>
             </button>
           );
         })}
       </div>
 
-      <p className="text-xs text-[var(--color-muted)] mb-8 min-h-[1.25rem]">
+      <p className="text-xs text-white/65 mb-8 min-h-[1.25rem] tracking-wide">
         {active.length === 0
           ? `Showing all ${projects.length} projects`
           : `${filtered.length} match${filtered.length === 1 ? '' : 'es'} · filtering by ${active.join(' + ')}`}

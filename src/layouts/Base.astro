@@ -3,7 +3,9 @@ import '~/styles/global.css';
 import Nav from '~/components/Nav.astro';
 import Footer from '~/components/Footer.astro';
 import ScrollProgress from '~/components/ScrollProgress';
+import HeroScene from '~/components/HeroScene';
 import { site } from '~/data/site';
+import { ClientRouter } from 'astro:transitions';
 
 interface Props {
   title?: string;
@@ -34,13 +36,82 @@ const pageTitle = title ? `${title} · ${site.name}` : `${site.name} — ${site.
     <meta property="og:title" content={pageTitle} />
     <meta property="og:description" content={description} />
     <meta property="og:type" content="website" />
+    <ClientRouter />
   </head>
   <body>
+    <!-- Persistent galaxy: kept alive across page navigations via transition:persist. -->
+    <div id="galaxy-bg" transition:persist="galaxy-bg" class="fixed inset-0 -z-10 pointer-events-none origin-center will-change-transform" aria-hidden="true">
+      <HeroScene client:only="react" />
+      <div id="galaxy-veil" class="absolute inset-0 bg-[rgba(7,7,11,0.35)]"></div>
+    </div>
+    <!-- Warp overlay: dark vignette closes during the page-to-page transition. -->
+    <div id="warp-overlay" transition:persist="warp-overlay" class="fixed inset-0 z-[60] pointer-events-none opacity-0" aria-hidden="true"
+         style="background: radial-gradient(circle at center, transparent 0%, transparent 25%, rgba(0,0,0,0.85) 70%, #000 100%);"></div>
+
     <ScrollProgress client:load />
     <Nav />
     <main class="md:pt-16">
       <slot />
     </main>
     <Footer />
+
+    <script>
+      // Warp-into-galaxy transition. We piggyback on Astro's ClientRouter so the
+      // galaxy island stays mounted across navigations (no Three.js teardown).
+      const galaxy = () => document.getElementById('galaxy-bg');
+      const veil = () => document.getElementById('galaxy-veil');
+      const overlay = () => document.getElementById('warp-overlay');
+
+      const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+      const DURATION = 700;
+
+      function startWarp() {
+        const g = galaxy(), v = veil(), o = overlay();
+        if (!g || !v || !o) return;
+        g.style.transition = `transform ${DURATION}ms cubic-bezier(0.5, 0, 0.9, 0.4)`;
+        g.style.transform = 'scale(10)';
+        v.style.transition = `background-color ${DURATION}ms ease-in`;
+        v.style.backgroundColor = 'rgba(0,0,0,0.7)';
+        o.style.transition = `opacity ${DURATION}ms ease-in`;
+        o.style.opacity = '1';
+        document.body.style.transition = 'opacity 450ms ease-in';
+        document.body.style.opacity = '0.15';
+      }
+
+      function endWarp() {
+        const g = galaxy(), v = veil(), o = overlay();
+        if (!g || !v || !o) return;
+        g.style.transition = 'transform 600ms ease-out';
+        g.style.transform = '';
+        v.style.transition = 'background-color 600ms ease-out';
+        v.style.backgroundColor = '';
+        o.style.transition = 'opacity 500ms ease-out';
+        o.style.opacity = '0';
+        document.body.style.transition = 'opacity 350ms ease-out';
+        document.body.style.opacity = '';
+      }
+
+      if (!reduce) {
+        // Astro fires this on every internal navigation (ClientRouter). We extend
+        // the prep step to wait out the warp, so the swap happens after the zoom.
+        document.addEventListener('astro:before-preparation', (event) => {
+          // Only treat real path changes as warps (skip same-page hash links).
+          const ev = event as unknown as { from: URL; to: URL; loader: () => Promise<void> };
+          if (ev.from.pathname === ev.to.pathname) return;
+          startWarp();
+          const orig = ev.loader;
+          ev.loader = async () => {
+            await Promise.all([
+              orig(),
+              new Promise((r) => setTimeout(r, DURATION)),
+            ]);
+          };
+        });
+        // After Astro swaps in the new page DOM, release the warp state.
+        document.addEventListener('astro:after-swap', () => {
+          window.requestAnimationFrame(endWarp);
+        });
+      }
+    </script>
   </body>
 </html>
