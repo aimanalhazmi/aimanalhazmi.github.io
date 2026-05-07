@@ -5,13 +5,8 @@
   "observability": {
     "enabled": true
   },
-  "main": "dist/_worker.js/index.js",
+  "main": "worker/src/index.js",
   "compatibility_flags": [
-    "global_fetch_strictly_public",
-    "nodejs_compat"
-  ],
-  "assets": {
-    "binding": "ASSETS",
-    "directory": "dist"
-  }
+    "global_fetch_strictly_public"
+  ]
 }
