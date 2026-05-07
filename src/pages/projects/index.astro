@@ -2,16 +2,16 @@
 import Base from '~/layouts/Base.astro';
 import Reveal from '~/components/Reveal';
 import ProjectFilter from '~/components/ProjectFilter';
-import { getCollection } from 'astro:content';
+import type { ProjectItem } from '~/components/ProjectFilter';
+import { getAllProjects } from '~/lib/projects';
 
-const projects = (await getCollection('projects'))
-  .sort((a, b) => a.data.order - b.data.order)
-  .map((p) => ({
-    slug: p.id,
-    title: p.data.title,
-    description: p.data.description,
-    tags: p.data.tags,
-  }));
+const all = await getAllProjects();
+const projects: ProjectItem[] = all.map((p) => ({
+  slug: p.slug,
+  title: p.title,
+  description: p.description,
+  tags: p.tags,
+}));
 ---
 
 <Base title="Projects">

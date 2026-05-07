@@ -4,6 +4,9 @@ import Reveal from '~/components/Reveal';
 import CvSubNav from '~/components/CvSubNav.astro';
 import SkillBadge from '~/components/SkillBadge.astro';
 import { skills } from '~/data/cv';
+import { getRecentlyLearnedSkills } from '~/lib/skills';
+
+const recentlyLearned = await getRecentlyLearnedSkills();
 ---
 
 <Base title="Skills">
@@ -28,6 +31,18 @@ import { skills } from '~/data/cv';
           </div>
         </Reveal>
       ))}
+
+      {recentlyLearned.length > 0 && (
+        <Reveal client:load delay={skills.length * 0.05}>
+          <div class="card p-6">
+            <p class="text-xs uppercase tracking-[0.2em] text-[var(--color-muted)] mb-2">Recently Learned</p>
+            <p class="text-xs text-[var(--color-muted)] mb-4 opacity-70">Picked up while building — sourced from project topics</p>
+            <div class="flex flex-wrap gap-2.5">
+              {recentlyLearned.map((name) => <SkillBadge skill={{ name }} />)}
+            </div>
+          </div>
+        </Reveal>
+      )}
     </div>
   </section>
 </Base>

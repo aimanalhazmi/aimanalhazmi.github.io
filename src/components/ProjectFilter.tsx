@@ -6,6 +6,8 @@ export type ProjectItem = {
   title: string;
   description: string;
   tags: string[];
+  href?: string;
+  external?: boolean;
 };
 
 /**
@@ -141,7 +143,9 @@ export default function ProjectFilter({ projects }: { projects: ProjectItem[] })
           {filtered.map((p, i) => (
             <motion.a
               key={p.slug}
-              href={`/projects/${p.slug}/`}
+              href={p.href ?? `/projects/${p.slug}/`}
+              target={p.external ? '_blank' : undefined}
+              rel={p.external ? 'noopener noreferrer' : undefined}
               layout
               initial={reduce ? false : { opacity: 0, y: 16 }}
               animate={{ opacity: 1, y: 0 }}
@@ -163,7 +167,9 @@ export default function ProjectFilter({ projects }: { projects: ProjectItem[] })
                   </span>
                 ))}
               </div>
-              <span className="text-sm text-[var(--color-accent-2)]">Read more →</span>
+              <span className="text-sm text-[var(--color-accent-2)]">
+                {p.external ? 'View on GitHub ↗' : 'Read more →'}
+              </span>
             </motion.a>
           ))}
         </AnimatePresence>

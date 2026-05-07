@@ -7,10 +7,9 @@ import Reveal from '~/components/Reveal';
 import ScrollSection from '~/components/ScrollSection';
 import { getCollection } from 'astro:content';
 import { site } from '~/data/site';
+import { getFeaturedProjects } from '~/lib/projects';
 
-const projects = (await getCollection('projects'))
-  .filter((p) => p.data.featured)
-  .sort((a, b) => a.data.order - b.data.order);
+const projects = await getFeaturedProjects();
 
 const posts = (await getCollection('blog'))
   .filter((p) => !p.data.draft)
@@ -101,11 +100,11 @@ const posts = (await getCollection('blog'))
     </div>
     <div class="grid md:grid-cols-3 gap-5">
       {projects.map((p) => (
-        <a href={`/projects/${p.id}/`} class="card block p-6 h-full">
-          <h3 class="font-[var(--font-display)] text-xl font-semibold mb-2">{p.data.title}</h3>
-          <p class="text-sm text-[var(--color-muted)] mb-4">{p.data.description}</p>
+        <a href={`/projects/${p.slug}/`} class="card block p-6 h-full">
+          <h3 class="font-[var(--font-display)] text-xl font-semibold mb-2">{p.title}</h3>
+          <p class="text-sm text-[var(--color-muted)] mb-4">{p.description}</p>
           <div class="flex flex-wrap gap-2">
-            {p.data.tags.slice(0, 4).map((t) => <span class="tag">{t}</span>)}
+            {p.tags.slice(0, 4).map((t: string) => <span class="tag">{t}</span>)}
           </div>
         </a>
       ))}
