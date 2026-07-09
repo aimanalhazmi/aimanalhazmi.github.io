@@ -1,7 +1,7 @@
 ---
-title: Stratum — Open-Source Contributor (DEEM Lab, TU Berlin)
-description: Implemented rule-based logical rewrites and unit tests for Stratum,
-  an ML system for large-scale agentic pipeline search.
+title: Stratum — Open-Source Contributor
+description: An open-source ML system for efficiently executing large-scale
+  agentic pipeline search.
 repo: https://github.com/aimanalhazmi/stratum
 tags:
   - Agents
