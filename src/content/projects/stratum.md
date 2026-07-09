@@ -2,7 +2,7 @@
 title: Stratum — Open-Source Contributor
 description: An open-source ML system for efficiently executing large-scale
   agentic pipeline search.
-repo: https://github.com/aimanalhazmi/stratum
+repo: https://github.com/deem-data/stratum
 tags:
   - Agents
   - ML
