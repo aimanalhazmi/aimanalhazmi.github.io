@@ -100,8 +100,6 @@ Two changes solved the problem.
 1. **Wrap every agent in its own [subgraph](https://docs.langchain.com/oss/python/langgraph/use-subgraphs).** A subgraph is called like a node and receives its own budget. A loop that does not terminate is then contained in the place where it occurs instead of stopping the parent graph.
 2. **Give every loop that is driven by a model its own counter in the state.** The retry counter in the schema above is not redundant. The recursion limit is a global emergency brake, while the counter is the real termination condition of this specific loop. Only the counter allows the system to end the loop in a controlled way, for example by answering with weak evidence and writing a log entry, instead of failing.
 
-If a reader takes only one practical result from this post, it should be this one.
-
 ## Three further observations from practice
 
 **The history of checkpoints is the most underrated feature.** A wrong answer can be analysed by reading the stored state of each step. It is not necessary to run the graph again with print statements and to hope that the model behaves in the same way twice.
