@@ -56,12 +56,7 @@ const posts = (await getCollection('blog'))
           class="w-40 h-40 md:w-44 md:h-44 rounded-full object-cover glow"
         />
         <div class="text-lg leading-relaxed text-[color:var(--color-fg)]/90 space-y-5">
-          <p>
-            I'm a Computer Science student focusing on <strong>Data Science and Engineering</strong>, with experience in software development and machine learning. I'm particularly passionate about <strong>AI</strong>, <strong>Machine Learning</strong>, <strong>Deep Learning</strong>, and <strong>Computer Vision</strong>, and I enjoy applying data-driven solutions to real-world problems.
-          </p>
-          <p>
-            Outside of academics and tech, I'm also actively involved in community volunteering.
-          </p>
+          {site.description.split(/\n\s*\n/).map((para) => <p>{para}</p>)}
           <div class="flex flex-wrap items-center gap-3 pt-2 text-sm">
             <a href={site.social.github} target="_blank" rel="noopener" class="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white/10 backdrop-blur-sm border border-white/20 text-white hover:bg-white/15 hover:border-white/40 transition-all">
               <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 .5a11.5 11.5 0 0 0-3.63 22.42c.58.1.79-.25.79-.56v-2.04c-3.2.7-3.88-1.36-3.88-1.36-.52-1.32-1.27-1.67-1.27-1.67-1.04-.71.08-.7.08-.7 1.15.08 1.76 1.18 1.76 1.18 1.02 1.76 2.69 1.25 3.35.96.1-.74.4-1.25.72-1.54-2.55-.29-5.24-1.28-5.24-5.7 0-1.26.45-2.29 1.18-3.1-.12-.29-.51-1.46.11-3.05 0 0 .97-.31 3.18 1.18a11 11 0 0 1 5.78 0c2.21-1.49 3.18-1.18 3.18-1.18.62 1.59.23 2.76.11 3.05.74.81 1.18 1.84 1.18 3.1 0 4.43-2.69 5.4-5.26 5.69.41.36.78 1.06.78 2.13v3.16c0 .31.21.67.8.56A11.5 11.5 0 0 0 12 .5Z"/></svg>
